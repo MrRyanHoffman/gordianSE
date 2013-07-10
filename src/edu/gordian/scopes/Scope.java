@@ -29,6 +29,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * The representation of a scope in the context of Gordian. A scope can be
+ * anything from the entire program to a 14-times nested if statement.
+ *
+ * @author Joel Gallant
+ */
 public class Scope {
 
     private final MapGroup publicVars;
@@ -39,6 +45,10 @@ public class Scope {
     private final Hashtable privateReturning = new Hashtable();
     private final Scope[] parents;
 
+    /**
+     * Constructs an empty scope. Empty scopes have nothing predefined. This
+     * should be used for entire scripts.
+     */
     public Scope() {
         publicVars = new MapGroup(new Hashtable());
         publicMethods = new MapGroup(new Hashtable());
@@ -46,6 +56,12 @@ public class Scope {
         parents = new Scope[0];
     }
 
+    /**
+     * Constructs a general scope. This should be used for entire scripts.
+     *
+     * @param methods methods that the script will have access to
+     * @param returning returning methods that the script will have access to
+     */
     public Scope(UserMethod[] methods, UserReturningMethod[] returning) {
         if (methods == null) {
             throw new NullPointerException("Methods were null");
@@ -66,6 +82,12 @@ public class Scope {
         parents = new Scope[0];
     }
 
+    /**
+     * Constructs a scope that is nested inside of another scope. This scope
+     * will inherit the elements of its parent.
+     *
+     * @param scope parent scope that created this one
+     */
     public Scope(Scope scope) {
         if (scope == null) {
             throw new NullPointerException("Parent scope is null");
@@ -83,6 +105,13 @@ public class Scope {
         publicReturning.add(scope.privateReturning);
     }
 
+    /**
+     * Converts a string value into a {@link Value} in the context of this
+     * scope.
+     *
+     * @param e value as it appears in code
+     * @return value as interpreted by the code
+     */
     public final Value toValue(String e) {
         if (e == null || Strings.isEmpty(e)) {
             throw new IllegalArgumentException("Value is not valid - " + e);
@@ -94,10 +123,10 @@ public class Scope {
             return new StaticValue(GordianNumber.valueOf(e));
         } catch (NumberFormatException ex) {
         }
-        if (e.toLowerCase().equals("true")) {
+        if (e.equalsIgnoreCase("true")) {
             return new StaticValue(Boolean.TRUE);
         }
-        if (e.toLowerCase().equals("false")) {
+        if (e.equalsIgnoreCase("false")) {
             return new StaticValue(Boolean.FALSE);
         }
 
@@ -197,6 +226,13 @@ public class Scope {
         return new StaticValue(e);
     }
 
+    /**
+     * Converts an array of strings into values using
+     * {@link #toValue(java.lang.String)}.
+     *
+     * @param values original values
+     * @return converted values
+     */
     public final Value[] toValues(String[] values) {
         Value[] v = new Value[values.length];
         for (int x = 0; x < values.length; x++) {
@@ -205,6 +241,13 @@ public class Scope {
         return v;
     }
 
+    /**
+     * Converts a string into a runnable element that the program can run.
+     *
+     * @param e original string as it appears in code
+     * @return executable element that the program can run
+     * @throws Exception when string is not an instruction
+     */
     public final Runnable toElement(String e) throws Exception {
         if (e == null || Strings.isEmpty(e)) {
             throw new IllegalArgumentException("Element is not valid - " + e);
@@ -267,10 +310,22 @@ public class Scope {
         throw new Exception("Not a valid instruction: " + e);
     }
 
+    /**
+     * Returns whether the scope contains the variable.
+     *
+     * @param key string used to access variable
+     * @return if key is a variable
+     */
     public final boolean isVariable(String key) {
         return privateVars.containsKey(key) || publicVars.containsKey(key);
     }
 
+    /**
+     * Returns the value of the variable associated with the key.
+     *
+     * @param key string used to access variable
+     * @return key as a variable
+     */
     public final Value getVariable(String key) {
         if (privateVars.containsKey(key)) {
             return (Value) privateVars.get(key);
@@ -281,10 +336,22 @@ public class Scope {
         }
     }
 
+    /**
+     * Returns if the value is a public variable.
+     *
+     * @param key string used to access variable
+     * @return if key is a variable
+     */
     protected final boolean isPublicVariable(String key) {
         return publicVars.containsKey(key);
     }
 
+    /**
+     * Returns the public value of the variable associated with the key.
+     *
+     * @param key string used to access variable
+     * @return key as a variable
+     */
     protected final Value getPublicVariable(String key) {
         if (publicVars.containsKey(key)) {
             return (Value) publicVars.get(key);
@@ -293,10 +360,22 @@ public class Scope {
         }
     }
 
+    /**
+     * Returns if the value is a private variable.
+     *
+     * @param key string used to access variable
+     * @return if key is a variable
+     */
     protected final boolean isPrivateVariable(String key) {
         return privateVars.containsKey(key);
     }
 
+    /**
+     * Returns the private value of the variable associated with the key.
+     *
+     * @param key string used to access variable
+     * @return key as a variable
+     */
     protected final Value getPrivateVariable(String key) {
         if (privateVars.containsKey(key)) {
             return (Value) privateVars.get(key);
@@ -305,15 +384,32 @@ public class Scope {
         }
     }
 
+    /**
+     * Returns whether it's valid to save a variable as the key.
+     *
+     * @param key string used to access variable
+     * @return if program can save a variable under the key
+     */
     public static boolean isValidKey(String key) {
         try {
             Double.parseDouble(key);
             return false;
         } catch (NumberFormatException ex) {
-            return !(Strings.isEmpty(key));
+            return !(Strings.isEmpty(key) || Strings.contains(key, "\"")
+                    || key.equalsIgnoreCase("true") || key.equalsIgnoreCase("false")
+                    || key.startsWith("!") || Strings.contains(key, "||") || Strings.contains(key, "&&")
+                    || Strings.contains(key, '=') || Strings.contains(key, '>') || Strings.contains(key, '<')
+                    || Strings.contains(key, '(') || Strings.contains(key, ')') || Strings.contains(key, '+')
+                    || Strings.contains(key, '-') || Strings.contains(key, '*') || Strings.contains(key, '/'));
         }
     }
 
+    /**
+     * Sets the variable associated with the key to a value.
+     *
+     * @param key string used to access variable
+     * @param value value to associate with key
+     */
     public final void setVariable(String key, Value value) {
         if (publicVars.containsKey(key)) {
             setPublicVariable(key, value);
@@ -322,6 +418,12 @@ public class Scope {
         }
     }
 
+    /**
+     * Sets the public variable associated with the key to a value.
+     *
+     * @param key string used to access variable
+     * @param value value to associate with key
+     */
     public final void setPublicVariable(String key, Value value) {
         if (isValidKey(key)) {
             publicVars.put(key, value);
@@ -330,6 +432,12 @@ public class Scope {
         }
     }
 
+    /**
+     * Sets the private variable associated with the key to a value.
+     *
+     * @param key string used to access variable
+     * @param value value to associate with key
+     */
     public final void setPrivateVariable(String key, Value value) {
         if (isValidKey(key)) {
             privateVars.put(key, value);
@@ -338,34 +446,68 @@ public class Scope {
         }
     }
 
+    /**
+     * Adds a method to be able to be used.
+     *
+     * @param name name of the method to call
+     * @param base method to call
+     */
     public final void addMethod(String name, MethodBase base) {
-        if (privateMethods.containsKey(name)) {
+        if (privateMethods.containsKey(name) || Strings.contains(name, '=')) {
             throw new RuntimeException("Cannot create another " + name + " method");
         }
         privateMethods.put(name, base);
     }
 
+    /**
+     * Adds a method to be able to be used anywhere.
+     *
+     * @param name name of the method to call
+     * @param base method to call
+     */
     public final void addGlobalMethod(String name, MethodBase base) {
-        if (publicMethods.containsKey(name)) {
+        if (publicMethods.containsKey(name) || Strings.contains(name, '=')) {
             throw new RuntimeException("Cannot create another " + name + " method");
         }
         publicMethods.put(name, base);
     }
 
+    /**
+     * Adds a returning method to be able to be used.
+     *
+     * @param name name of the method to call (abides by variable name
+     * limitations)
+     * @param base method to call
+     */
     public final void addReturning(String name, ReturningMethodBase base) {
-        if (privateReturning.containsKey(name)) {
+        if (privateReturning.containsKey(name) || !isValidKey(name)) {
             throw new RuntimeException("Cannot create another " + name + " method");
         }
         privateReturning.put(name, base);
     }
 
+    /**
+     * Adds a returning method to be able to be used anywhere.
+     *
+     * @param name name of the method to call (abides by variable name
+     * limitations)
+     * @param base method to call
+     */
     public final void addGlobalReturning(String name, ReturningMethodBase base) {
-        if (publicReturning.containsKey(name)) {
+        if (publicReturning.containsKey(name) || !isValidKey(name)) {
             throw new RuntimeException("Cannot create another " + name + " method");
         }
         publicReturning.put(name, base);
     }
 
+    /**
+     * Converts a script into a {@link StringTokenizer} that can be run through.
+     * Does all of the pre-run conversions that gets rid of unnecessary
+     * information.
+     *
+     * @param script full script to split up
+     * @return split up cleaned script
+     */
     public static final StringTokenizer preRun(String script) {
         script = Strings.replaceAll(script + ';', '\n', ';');
         if (Strings.contains(script, ' ')) {
@@ -378,6 +520,12 @@ public class Scope {
         return new StringTokenizer(script, ";");
     }
 
+    /**
+     * Runs the script.
+     *
+     * @param script full script to run
+     * @throws Exception when script running encounters any kind of error
+     */
     public void run(String script) throws Exception {
         StringTokenizer t = preRun(script);
         int line = 0;
