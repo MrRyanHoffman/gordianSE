@@ -87,6 +87,9 @@ public class Scope {
         if (e == null || Strings.isEmpty(e)) {
             throw new IllegalArgumentException("Value is not valid - " + e);
         }
+        if (Strings.contains(e, "\"")) {
+            return new StaticValue(Strings.replaceAll(e, "\"", ""));
+        }
         try {
             return new StaticValue(GordianNumber.valueOf(e));
         } catch (NumberFormatException ex) {
@@ -191,9 +194,6 @@ public class Scope {
                     + toValue(e.substring(Strings.indexThatIsnt(e, '+', "++") + 1)).getValue().toString());
         }
 
-        if (Strings.contains(e, "\"")) {
-            e = Strings.replaceAll(e, '\"', "");
-        }
         return new StaticValue(e);
     }
 
