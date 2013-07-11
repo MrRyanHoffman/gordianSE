@@ -1,7 +1,6 @@
 package edu.gordian;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A set of utility methods to manipulate and test strings. Contains many of the
@@ -32,8 +31,8 @@ public final class Strings {
      * exists that is not an {@code i}, this returns -1.
      *
      * @param string string to test
-     * @param s Element to find index of
-     * @param i Element that {@code s} should not have the same index as
+     * @param s element to find index of
+     * @param i element that {@code s} should not have the same index as
      * @return index of {@code s} that isn't the same index as {@code i}
      */
     public static int indexThatIsnt(String string, String s, String i) {
@@ -51,8 +50,8 @@ public final class Strings {
      * exists that is not an {@code i}, this returns -1.
      *
      * @param string string to test
-     * @param s Element to find index of
-     * @param i Element that {@code s} should not have the same index as
+     * @param s element to find index of
+     * @param i element that {@code s} should not have the same index as
      * @return index of {@code s} that isn't the same index as {@code i}
      */
     public static int indexThatIsnt(String string, char s, String i) {
@@ -64,8 +63,8 @@ public final class Strings {
      * exists that is not an {@code i}, this returns -1.
      *
      * @param string string to test
-     * @param s Element to find index of
-     * @param i Element that {@code s} should not have the same index as
+     * @param s element to find index of
+     * @param i element that {@code s} should not have the same index as
      * @return index of {@code s} that isn't the same index as {@code i}
      */
     public static int indexThatIsnt(String string, String s, char i) {
@@ -77,8 +76,8 @@ public final class Strings {
      * exists that is not an {@code i}, this returns -1.
      *
      * @param string string to test
-     * @param s Element to find index of
-     * @param i Element that {@code s} should not have the same index as
+     * @param s element to find index of
+     * @param i element that {@code s} should not have the same index as
      * @return index of {@code s} that isn't the same index as {@code i}
      */
     public static int indexThatIsnt(String string, char s, char i) {
@@ -162,11 +161,11 @@ public final class Strings {
     }
 
     /**
-     * Returns whether the Element at {@code c} index in {@code string} with
+     * Returns whether the element at {@code c} index in {@code string} with
      * {@code length} length is directly beside {@code beside}.
      *
      * @param string original string to check in
-     * @param c index of the Element to check beside
+     * @param c index of the element to check beside
      * @param length the length of {@code c}
      * @param beside string that could be beside {@code c}
      * @return if {@code beside} is directly beside {@code c}, in the context of
@@ -262,7 +261,7 @@ public final class Strings {
         if (string.indexOf(split) < 0) {
             return new String[]{string};
         }
-        List node = new ArrayList();
+        ArrayList node = new ArrayList();
         int index = string.indexOf(split);
         while (index >= 0) {
             node.add(string.substring(0, index));
@@ -354,8 +353,8 @@ public final class Strings {
      * that isn't {@code isnt}.
      *
      * @param string string to test
-     * @param contains Element it could contain
-     * @param isnt Element that index cannot be of
+     * @param contains element it could contain
+     * @param isnt element that index cannot be of
      * @return if string contains an instance of {@code contains} that isn't
      * {@code isnt}
      */
@@ -368,8 +367,8 @@ public final class Strings {
      * that isn't {@code isnt}.
      *
      * @param string string to test
-     * @param contains Element it could contain
-     * @param isnt Element that index cannot be of
+     * @param contains element it could contain
+     * @param isnt element that index cannot be of
      * @return if string contains an instance of {@code contains} that isn't
      * {@code isnt}
      */
@@ -382,8 +381,8 @@ public final class Strings {
      * that isn't {@code isnt}.
      *
      * @param string string to test
-     * @param contains Element it could contain
-     * @param isnt Element that index cannot be of
+     * @param contains element it could contain
+     * @param isnt element that index cannot be of
      * @return if string contains an instance of {@code contains} that isn't
      * {@code isnt}
      */
@@ -396,8 +395,8 @@ public final class Strings {
      * that isn't {@code isnt}.
      *
      * @param string string to test
-     * @param contains Element it could contain
-     * @param isnt Element that index cannot be of
+     * @param contains element it could contain
+     * @param isnt element that index cannot be of
      * @return if string contains an instance of {@code contains} that isn't
      * {@code isnt}
      */
@@ -409,7 +408,7 @@ public final class Strings {
      * Returns the string before {@code regex} in {@code string}.
      *
      * @param string original string
-     * @param regex Element to split before
+     * @param regex element to split before
      * @return string before {@code regex}
      */
     public static String before(String string, String regex) {
@@ -420,7 +419,7 @@ public final class Strings {
      * Returns the string before {@code regex} in {@code string}.
      *
      * @param string original string
-     * @param regex Element to split before
+     * @param regex element to split before
      * @return string before {@code regex}
      */
     public static String before(String string, char regex) {
@@ -442,7 +441,7 @@ public final class Strings {
      * Returns the string after {@code regex} in {@code string}.
      *
      * @param string original string
-     * @param regex Element to split after
+     * @param regex element to split after
      * @return string after {@code regex}
      */
     public static String after(String string, String regex) {
@@ -453,7 +452,7 @@ public final class Strings {
      * Returns the string after {@code regex} in {@code string}.
      *
      * @param string original string
-     * @param regex Element to split after
+     * @param regex element to split after
      * @return string after {@code regex}
      */
     public static String after(String string, char regex) {

@@ -1,6 +1,5 @@
 package edu.gordian.values;
 
-
 public final class GordianNumber {
 
     private final double value;
