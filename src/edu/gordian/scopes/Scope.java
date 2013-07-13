@@ -26,6 +26,7 @@ import edu.gordian.values.expressions.numbers.Greater;
 import edu.gordian.values.expressions.numbers.GreaterOrEqual;
 import edu.gordian.values.expressions.numbers.Less;
 import edu.gordian.values.expressions.numbers.LessOrEqual;
+import edu.gordian.values.gordian.GordianBoolean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -551,21 +552,6 @@ public class Scope {
         }
 
         return a;
-    }
-
-    private double getNumber(String val) {
-        Object v = toValue(val).getValue();
-        if (v instanceof GordianNumber) {
-            return ((GordianNumber) v).doubleValue();
-        } else if (v instanceof Double) {
-            return ((Double) v).doubleValue();
-        } else {
-            throw new ClassCastException(val + " is not a number");
-        }
-    }
-
-    private boolean getBoolean(String val) {
-        return ((Boolean) toValue(val).getValue()).booleanValue();
     }
 
     private final class Return implements Runnable {
