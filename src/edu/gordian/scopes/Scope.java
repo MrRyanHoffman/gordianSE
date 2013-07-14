@@ -7,7 +7,6 @@ import edu.gordian.elements.methods.Method;
 import edu.gordian.elements.methods.MethodBase;
 import edu.gordian.elements.methods.ReturningMethod;
 import edu.gordian.elements.methods.UserMethod;
-import edu.gordian.values.gordian.GordianNumber;
 import edu.gordian.values.ReturningMethodBase;
 import edu.gordian.values.UserReturningMethod;
 import edu.gordian.values.Value;
@@ -26,7 +25,6 @@ import edu.gordian.values.expressions.numbers.Greater;
 import edu.gordian.values.expressions.numbers.GreaterOrEqual;
 import edu.gordian.values.expressions.numbers.Less;
 import edu.gordian.values.expressions.numbers.LessOrEqual;
-import edu.gordian.values.gordian.GordianBoolean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -140,14 +138,14 @@ public class Scope {
             }
 
             /* EXPRESSIONS */
-        } else if (Greater.is(e)) {
-            return Greater.valueOf(this, e);
-        } else if (Less.is(e)) {
-            return Less.valueOf(this, e);
         } else if (GreaterOrEqual.is(e)) {
             return GreaterOrEqual.valueOf(this, e);
         } else if (LessOrEqual.is(e)) {
             return LessOrEqual.valueOf(this, e);
+        } else if (Greater.is(e)) {
+            return Greater.valueOf(this, e);
+        } else if (Less.is(e)) {
+            return Less.valueOf(this, e);
         } else if (Equals.is(e)) {
             return Equals.valueOf(this, e);
         } else if (NotEquals.is(e)) {
