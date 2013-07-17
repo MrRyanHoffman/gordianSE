@@ -7,7 +7,7 @@ import java.util.List;
 
 final class If extends Scope {
 
-    public If(Scope scope) {
+    If(Scope scope) {
         super(scope);
     }
 
