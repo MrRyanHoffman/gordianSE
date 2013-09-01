@@ -6,8 +6,11 @@ import edu.gordian.scopes.GordianWhile;
 import edu.gordian.scopes.GordianFor;
 import edu.gordian.element.Analyser;
 import edu.gordian.instruction.Method;
+import edu.gordian.operator.Operator;
 import edu.gordian.scope.Scope;
+import edu.gordian.scopes.GordianRuntime;
 import edu.gordian.values.GordianNumber;
+import java.util.Iterator;
 
 public class GordianAnalyser implements Analyser {
 
@@ -40,25 +43,13 @@ public class GordianAnalyser implements Analyser {
             if (m != null) {
                 m.run(scope.getInterpreter().interpretValues(s.substring(s.indexOf("(") + 1, s.lastIndexOf(")")).split(",")));
             }
-        } else if (s.contains("=")) {
-            new GordianDeclaration(scope).set(s.substring(0, s.indexOf("=")),
-                    scope.getInterpreter().interpretValue(s.substring(s.indexOf("=") + 1)));
-        } else if (s.endsWith("++")) {
-            GordianNumber n = (GordianNumber) scope.storage().get(s.substring(0, s.indexOf("++")));
-            if(n == null) {
-                n = new GordianNumber(0);
-            }
-            new GordianDeclaration(scope).set(s.substring(0, s.indexOf("++")),
-                    new GordianNumber(n.getDouble() + 1));
-        }  else if (s.endsWith("--")) {
-            GordianNumber n = (GordianNumber) scope.storage().get(s.substring(0, s.indexOf("--")));
-            if(n == null) {
-                n = new GordianNumber(0);
-            }
-            new GordianDeclaration(scope).set(s.substring(0, s.indexOf("--")),
-                    new GordianNumber(n.getDouble() - 1));
         } else {
-            throw new NullPointerException("The value \"" + s + "\" could not be interpreted as an instruction.");
+            try {
+                // Ask for value - declarations are done here.
+                scope.getInterpreter().interpretValue(s);
+            } catch (NullPointerException ex) {
+                throw new NullPointerException("The value \"" + s + "\" could not be interpreted as an instruction.");
+            }
         }
     }
 }

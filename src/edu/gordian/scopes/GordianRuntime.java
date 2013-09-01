@@ -8,9 +8,11 @@ import edu.gordian.value.Value;
 import edu.gordian.instruction.Method;
 import edu.gordian.internal.Methods;
 import edu.gordian.internal.Storage;
+import edu.gordian.operator.Operator;
 import edu.gordian.values.GordianNull;
 import java.util.Arrays;
 import edu.gordian.scope.Scope;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public final class GordianRuntime implements Scope {
@@ -19,6 +21,9 @@ public final class GordianRuntime implements Scope {
     private final Interpreter interpreter = new GordianInterpreter(this);
     private final Methods methods = new Methods();
     private final Storage storage = new Storage();
+    public static final List operations = Arrays.asList(new Operator[]{
+        new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
+    });
 
     {
         methods.put("print", new Method() {
@@ -47,7 +52,7 @@ public final class GordianRuntime implements Scope {
                 if (t.endsWith(":")) {
                     StringBuilder buffer = new StringBuilder(t).append(";");
                     int scopes = 1;
-                    while (tokenizer.hasMoreElements() && !(scopes == 0))  {
+                    while (tokenizer.hasMoreElements() && !(scopes == 0)) {
                         t = tokenizer.nextToken();
                         buffer.append(t).append(";");
                         if (t.endsWith(":")) {
@@ -57,7 +62,7 @@ public final class GordianRuntime implements Scope {
                         }
                     }
                     String f = buffer.toString();
-                    if(f.endsWith("fi;")) {
+                    if (f.endsWith("fi;")) {
                         f = f.substring(0, f.length() - 4);
                     }
                     getAnalyser().analyseBlock(f);
@@ -131,5 +136,70 @@ public final class GordianRuntime implements Scope {
         }
 
         return a;
+    }
+
+    private static class Addition implements Operator {
+
+        @Override
+        public char getChar() {
+            return '+';
+        }
+
+        @Override
+        public double result(double o, double o1) {
+            return o + o1;
+        }
+    }
+
+    private static class Subtraction implements Operator {
+
+        @Override
+        public char getChar() {
+            return '-';
+        }
+
+        @Override
+        public double result(double o, double o1) {
+            return o - o1;
+        }
+    }
+
+    private static class Multiplication implements Operator {
+
+        @Override
+        public char getChar() {
+            return '*';
+        }
+
+        @Override
+        public double result(double o, double o1) {
+            return o * o1;
+        }
+    }
+
+    private static class Division implements Operator {
+
+        @Override
+        public char getChar() {
+            return '/';
+        }
+
+        @Override
+        public double result(double o, double o1) {
+            return o / o1;
+        }
+    }
+
+    private static class Modulus implements Operator {
+
+        @Override
+        public char getChar() {
+            return '%';
+        }
+
+        @Override
+        public double result(double o, double o1) {
+            return o % o1;
+        }
     }
 }
