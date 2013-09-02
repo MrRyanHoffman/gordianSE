@@ -1,12 +1,12 @@
 package edu.gordian.elements;
 
-import edu.gordian.instruction.Method;
+import language.instruction.Method;
 import edu.gordian.instructions.GordianDeclaration;
-import edu.gordian.operator.Operator;
-import edu.gordian.scope.Scope;
+import language.operator.Operator;
+import language.scope.Scope;
 import edu.gordian.scopes.GordianRuntime;
-import edu.gordian.value.Interpreter;
-import edu.gordian.value.Value;
+import language.value.Interpreter;
+import language.value.Value;
 import edu.gordian.values.GordianBoolean;
 import edu.gordian.values.GordianNumber;
 import edu.gordian.values.GordianString;

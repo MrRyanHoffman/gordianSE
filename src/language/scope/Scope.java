@@ -1,9 +1,9 @@
-package edu.gordian.scope;
+package language.scope;
 
-import edu.gordian.element.Analyser;
+import language.element.Analyser;
 import edu.gordian.internal.Methods;
 import edu.gordian.internal.Storage;
-import edu.gordian.value.Interpreter;
+import language.value.Interpreter;
 
 public interface Scope {
 

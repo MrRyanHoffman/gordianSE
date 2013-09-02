@@ -1,4 +1,4 @@
-package edu.gordian.operator;
+package language.operator;
 
 public interface Operator {
 

@@ -1,6 +1,6 @@
 package edu.gordian.scopes;
 
-import edu.gordian.scope.Scope;
+import language.scope.Scope;
 
 public class GordianThread extends GordianScope {
 

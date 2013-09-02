@@ -1,6 +1,6 @@
 package edu.gordian;
 
-public abstract class Method implements edu.gordian.instruction.Method {
+public abstract class Method implements language.instruction.Method {
 
     private final String name;
 

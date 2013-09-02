@@ -2,11 +2,11 @@ package edu.gordian.scopes;
 
 import edu.gordian.elements.GordianAnalyser;
 import edu.gordian.elements.GordianInterpreter;
-import edu.gordian.element.Analyser;
+import language.element.Analyser;
 import edu.gordian.internal.Methods;
 import edu.gordian.internal.Storage;
-import edu.gordian.scope.Scope;
-import edu.gordian.value.Interpreter;
+import language.scope.Scope;
+import language.value.Interpreter;
 
 public class GordianScope implements Scope {
 

@@ -1,7 +1,7 @@
 package edu.gordian.internal;
 
 import edu.gordian.scopes.GordianRuntime;
-import edu.gordian.value.Value;
+import language.value.Value;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

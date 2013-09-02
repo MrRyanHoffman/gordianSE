@@ -1,6 +1,6 @@
 package edu.gordian.internal;
 
-import edu.gordian.instruction.Method;
+import language.instruction.Method;
 import edu.gordian.scopes.GordianRuntime;
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package edu.gordian.value;
+package language.value;
 
 public interface Value {
 }

@@ -1,6 +1,6 @@
 package edu.gordian.values;
 
-import edu.gordian.value.Value;
+import language.value.Value;
 
 public final class GordianNull implements Value {
 

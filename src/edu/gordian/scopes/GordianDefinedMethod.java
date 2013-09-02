@@ -1,9 +1,9 @@
 package edu.gordian.scopes;
 
-import edu.gordian.instruction.Method;
+import language.instruction.Method;
 import edu.gordian.internal.ValueReturned;
-import edu.gordian.scope.Scope;
-import edu.gordian.value.Value;
+import language.scope.Scope;
+import language.value.Value;
 
 public class GordianDefinedMethod extends GordianScope {
 

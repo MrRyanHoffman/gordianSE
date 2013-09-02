@@ -1,6 +1,6 @@
 package edu.gordian;
 
-import edu.gordian.scope.Scope;
+import language.scope.Scope;
 import edu.gordian.scopes.GordianRuntime;
 
 public final class Gordian {

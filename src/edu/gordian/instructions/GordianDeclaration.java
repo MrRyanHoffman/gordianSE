@@ -1,8 +1,8 @@
 package edu.gordian.instructions;
 
-import edu.gordian.instruction.Declaration;
-import edu.gordian.value.Value;
-import edu.gordian.scope.Scope;
+import language.instruction.Declaration;
+import language.value.Value;
+import language.scope.Scope;
 
 public class GordianDeclaration implements Declaration {
 

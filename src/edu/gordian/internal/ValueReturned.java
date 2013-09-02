@@ -1,6 +1,6 @@
 package edu.gordian.internal;
 
-import edu.gordian.value.Value;
+import language.value.Value;
 
 public class ValueReturned extends RuntimeException {
 

@@ -1,6 +1,6 @@
-package edu.gordian.instruction;
+package language.instruction;
 
-import edu.gordian.value.Value;
+import language.value.Value;
 
 public interface Method {
 

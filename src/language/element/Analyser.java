@@ -1,4 +1,4 @@
-package edu.gordian.element;
+package language.element;
 
 public interface Analyser {
 

@@ -1,7 +1,7 @@
-package edu.gordian.element;
+package language.element;
 
-import edu.gordian.value.Interpreter;
-import edu.gordian.value.Value;
+import language.value.Interpreter;
+import language.value.Value;
 
 public interface Element {
 
