@@ -18,6 +18,12 @@ public final class Storage {
 
     public Value put(String key, Value value) {
         Value old = get(key);
+        nodes.add(new Node(key, value));
+        return old;
+    }
+
+    public Value set(String key, Value value) {
+        Value old = get(key);
         if (old == null) {
             nodes.add(new Node(key, value));
         } else {

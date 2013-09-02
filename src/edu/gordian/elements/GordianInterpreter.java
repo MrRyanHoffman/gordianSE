@@ -62,10 +62,10 @@ public class GordianInterpreter implements Interpreter {
         }
 
         if (s.contains("=")
-                && s.indexOf("=") < s.indexOf("==")
-                && s.indexOf("=") < s.indexOf("!=") + 1
-                && s.indexOf("=") < s.indexOf(">=") + 1
-                && s.indexOf("=") < s.indexOf("<=") + 1) {
+                && !(s.contains("==") && s.indexOf("=") == s.indexOf("=="))
+                && !(s.contains("!=") && s.indexOf("=") == s.indexOf("!=") - 1)
+                && !(s.contains(">=") && s.indexOf("=") == s.indexOf(">=") - 1)
+                && !(s.contains("<=") && s.indexOf("=") == s.indexOf("<=") - 1)) {
             return new GordianDeclaration(scope).set(s.substring(0, s.indexOf("=")),
                     scope.getInterpreter().interpretValue(s.substring(s.indexOf("=") + 1)));
         } else if (s.endsWith("++")) {

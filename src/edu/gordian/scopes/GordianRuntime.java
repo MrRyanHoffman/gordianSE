@@ -76,7 +76,7 @@ public final class GordianRuntime implements Scope {
                 return new GordianNumber(((GordianNumber) args[0]).getInt());
             }
         });
-        storage.put("null", GordianNull.get());
+        storage.set("null", GordianNull.get());
     }
 
     @Override
