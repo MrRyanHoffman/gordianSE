@@ -7,6 +7,7 @@ import edu.gordian.element.Analyser;
 import edu.gordian.scope.Scope;
 import edu.gordian.scopes.GordianCount;
 import edu.gordian.scopes.GordianDefinedMethod;
+import edu.gordian.scopes.GordianScope;
 import edu.gordian.scopes.GordianThread;
 
 public class GordianAnalyser implements Analyser {
@@ -39,6 +40,8 @@ public class GordianAnalyser implements Analyser {
             new GordianDefinedMethod(scope).define(s.substring(3, s.indexOf("(")),
                     s.substring(s.indexOf("(") + 1, s.substring(0, s.indexOf(";")).lastIndexOf(")")).split(","),
                     s.substring(s.indexOf(";") + 1));
+        } else if (s.startsWith("scope")) {
+            new GordianScope(scope).run(s.substring(s.indexOf(";") + 1));
         } else {
             throw new NullPointerException("The value \"" + s + "\" could not be interpreted as a block.");
         }
