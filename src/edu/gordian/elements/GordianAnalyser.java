@@ -1,5 +1,6 @@
 package edu.gordian.elements;
 
+import edu.first.util.Strings;
 import edu.gordian.scopes.GordianIf;
 import edu.gordian.scopes.GordianWhile;
 import edu.gordian.scopes.GordianFor;
@@ -18,27 +19,26 @@ public class GordianAnalyser implements Analyser {
         this.scope = scope;
     }
 
-    @Override
     public void analyseBlock(String s) {
         if (s.startsWith("if")) {
-            new GordianIf(scope).run(s.substring(3, s.substring(0, s.indexOf(":")).lastIndexOf(")")),
+            new GordianIf(scope).run(s.substring(3, s.substring(0, s.indexOf(":")).lastIndexOf(')')),
                     s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("while")) {
-            new GordianWhile(scope).run(s.substring(6, s.substring(0, s.indexOf(":")).lastIndexOf(")")),
+            new GordianWhile(scope).run(s.substring(6, s.substring(0, s.indexOf(":")).lastIndexOf(')')),
                     s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("for")) {
-            new GordianFor(scope).run(s.substring(4, s.substring(0, s.indexOf(":")).lastIndexOf(")")),
+            new GordianFor(scope).run(s.substring(4, s.substring(0, s.indexOf(":")).lastIndexOf(')')),
                     s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("count")) {
             new GordianCount(scope).run(s.substring(6, s.indexOf(",")),
-                    s.substring(s.indexOf(",") + 1, s.substring(0, s.indexOf(":")).lastIndexOf(",")),
-                    s.substring(s.substring(0, s.indexOf(":")).lastIndexOf(",") + 1, s.substring(0, s.indexOf(":")).lastIndexOf(")")),
+                    s.substring(s.indexOf(",") + 1, s.substring(0, s.indexOf(":")).lastIndexOf(',')),
+                    s.substring(s.substring(0, s.indexOf(":")).lastIndexOf(',') + 1, s.substring(0, s.indexOf(":")).lastIndexOf(')')),
                     s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("thread")) {
             new GordianThread(scope).runThread(s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("def")) {
             new GordianDefinedMethod(scope).define(s.substring(3, s.indexOf("(")),
-                    s.substring(s.indexOf("(") + 1, s.substring(0, s.indexOf(";")).lastIndexOf(")")).split(","),
+                    Strings.split(s.substring(s.indexOf("(") + 1, s.substring(0, s.indexOf(";")).lastIndexOf(')')), ","),
                     s.substring(s.indexOf(";") + 1));
         } else if (s.startsWith("scope")) {
             new GordianScope(scope).run(s.substring(s.indexOf(";") + 1));
@@ -47,7 +47,6 @@ public class GordianAnalyser implements Analyser {
         }
     }
 
-    @Override
     public void analyseInstruction(String s) {
         try {
             // Ask for value - all instructions have a value.

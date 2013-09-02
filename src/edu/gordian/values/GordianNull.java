@@ -13,17 +13,14 @@ public final class GordianNull implements Value {
     private GordianNull() {
     }
 
-    @Override
     public boolean equals(Object obj) {
         return obj instanceof GordianNull;
     }
 
-    @Override
     public String toString() {
         return "null";
     }
 
-    @Override
     public int hashCode() {
         int hash = 7;
         return hash;

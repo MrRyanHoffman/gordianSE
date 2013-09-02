@@ -10,8 +10,7 @@ public class GordianThread extends GordianScope {
 
     public void runThread(final String run) {
         new Thread(new Runnable() {
-            @Override
-            public void run() {
+                    public void run() {
                 GordianThread.this.run(run);
             }
         }).start();

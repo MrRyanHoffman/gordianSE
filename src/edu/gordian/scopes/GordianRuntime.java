@@ -1,5 +1,8 @@
 package edu.gordian.scopes;
 
+import edu.first.util.Strings;
+import edu.first.util.list.Collections;
+import edu.first.util.list.List;
 import edu.gordian.elements.GordianAnalyser;
 import edu.gordian.elements.GordianInterpreter;
 import language.element.Analyser;
@@ -11,12 +14,12 @@ import edu.gordian.internal.GordianStorage;
 import edu.gordian.internal.ValueReturned;
 import language.operator.Operator;
 import edu.gordian.values.GordianNull;
-import java.util.Arrays;
 import language.scope.Scope;
 import edu.gordian.values.GordianNumber;
-import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
+import language.internal.Methods;
+import language.internal.Storage;
 
 public final class GordianRuntime implements Scope {
 
@@ -25,22 +28,20 @@ public final class GordianRuntime implements Scope {
     private final GordianMethods methods = new GordianMethods();
     private final GordianStorage storage = new GordianStorage();
     private static final Random RANDOM = new Random();
-    public static final List operations = Arrays.asList(new Operator[]{
+    public static final List operations = Collections.asList(new Operator[]{
         new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
     });
 
     {
         methods.put("return", new Method() {
-            @Override
             public Value run(Value[] args) {
                 throw new ValueReturned(args[0]);
             }
         });
         methods.put("print", new Method() {
-            @Override
             public Value run(Value[] args) {
                 if (args.length > 1) {
-                    System.out.println(Arrays.asList(args));
+                    System.out.println(Collections.asList(args));
                 } else {
                     System.out.println(args[0]);
                 }
@@ -48,7 +49,6 @@ public final class GordianRuntime implements Scope {
             }
         });
         methods.put("sleep", new Method() {
-            @Override
             public Value run(Value[] args) {
                 try {
                     Thread.sleep(((GordianNumber) args[0]).getLong());
@@ -59,19 +59,16 @@ public final class GordianRuntime implements Scope {
             }
         });
         methods.put("rand", new Method() {
-            @Override
             public Value run(Value[] args) {
                 return new GordianNumber(RANDOM.nextDouble());
             }
         });
         methods.put("randint", new Method() {
-            @Override
             public Value run(Value[] args) {
                 return new GordianNumber(RANDOM.nextInt());
             }
         });
         methods.put("int", new Method() {
-            @Override
             public Value run(Value[] args) {
                 return new GordianNumber(((GordianNumber) args[0]).getInt());
             }
@@ -79,7 +76,6 @@ public final class GordianRuntime implements Scope {
         storage.set("null", GordianNull.get());
     }
 
-    @Override
     public Scope parent() {
         return null;
     }
@@ -91,36 +87,36 @@ public final class GordianRuntime implements Scope {
     }
 
     public static boolean isValidName(String s) {
-        return !(s.isEmpty()
-                || s.contains("=")
-                || s.contains(":")
-                || s.contains("+")
-                || s.contains("-")
-                || s.contains("*")
-                || s.contains("/")
-                || s.contains(">")
-                || s.contains("<")
-                || s.contains("&")
-                || s.contains("|")
-                || s.contains("!")
-                || s.contains("(")
-                || s.contains(")")
-                || s.contains("\"")
-                || s.contains("\'")
+        return !(Strings.isEmpty(s)
+                || Strings.contains(s, "=")
+                || Strings.contains(s, ":")
+                || Strings.contains(s, "+")
+                || Strings.contains(s, "-")
+                || Strings.contains(s, "*")
+                || Strings.contains(s, "/")
+                || Strings.contains(s, ">")
+                || Strings.contains(s, "<")
+                || Strings.contains(s, "&")
+                || Strings.contains(s, "|")
+                || Strings.contains(s, "!")
+                || Strings.contains(s, "(")
+                || Strings.contains(s, ")")
+                || Strings.contains(s, "\"")
+                || Strings.contains(s, "\'")
                 || s.equalsIgnoreCase("true")
                 || s.equalsIgnoreCase("false"));
     }
 
     public static void run(Scope s, String i) {
         i = pre(i);
-        if ((i.indexOf(";") == i.lastIndexOf(";")) && (i.indexOf(";") == i.length() - 1)) {
+        if ((i.indexOf(";") == i.lastIndexOf(';')) && (i.indexOf(";") == i.length() - 1)) {
             s.getAnalyser().analyseInstruction(i.substring(0, i.length() - 1));
         } else {
             StringTokenizer tokenizer = new StringTokenizer(i, ";");
             while (tokenizer.hasMoreElements()) {
                 String t = tokenizer.nextToken();
                 if (t.endsWith(":")) {
-                    StringBuilder buffer = new StringBuilder(t).append(";");
+                    StringBuffer buffer = new StringBuffer(t).append(";");
                     int scopes = 1;
                     while (tokenizer.hasMoreElements() && !(scopes == 0)) {
                         t = tokenizer.nextToken();
@@ -143,28 +139,23 @@ public final class GordianRuntime implements Scope {
         }
     }
 
-    @Override
     public void run(String i) {
         run(this, i);
     }
 
-    @Override
     public Analyser getAnalyser() {
         return analyser;
     }
 
-    @Override
     public Interpreter getInterpreter() {
         return interpreter;
     }
 
-    @Override
-    public GordianMethods methods() {
+    public Methods methods() {
         return methods;
     }
 
-    @Override
-    public GordianStorage storage() {
+    public Storage storage() {
         return storage;
     }
 
@@ -172,20 +163,20 @@ public final class GordianRuntime implements Scope {
         if (!s.endsWith(";")) {
             s = s + ";";
         }
-        s = s.replaceAll("\n", ";");
-        s = s.replaceAll(":", ":;");
-        if (s.contains(" ")) {
+        s = Strings.replaceAll(s, "\n", ";");
+        s = Strings.replaceAll(s, ":", ":;");
+        if (Strings.contains(s, " ")) {
             s = removeSpaces(s, 0);
         }
-        while (s.contains("#")) {
+        while (Strings.contains(s, "#")) {
             String toRemove = s.substring(s.indexOf('#'), (s.substring(s.indexOf('#'))).indexOf(';') + s.indexOf('#'));
-            s = s.replace(toRemove, "");
+            s = Strings.replace(s, toRemove, "");
         }
         return s;
     }
 
     private static String removeSpaces(final String s, int x) {
-        String a = s.replaceAll("\t", " ");
+        String a = Strings.replaceAll(s, "\t", " ");
 
         boolean inQuotes = false;
         x += a.substring(x).indexOf(' ');
@@ -206,7 +197,7 @@ public final class GordianRuntime implements Scope {
             }
         }
 
-        if (a.substring(x).contains(" ")) {
+        if (Strings.contains(a.substring(x), " ")) {
             return removeSpaces(a, x);
         }
 
@@ -215,12 +206,10 @@ public final class GordianRuntime implements Scope {
 
     private static class Addition implements Operator {
 
-        @Override
         public char getChar() {
             return '+';
         }
 
-        @Override
         public double result(double o, double o1) {
             return o + o1;
         }
@@ -228,12 +217,10 @@ public final class GordianRuntime implements Scope {
 
     private static class Subtraction implements Operator {
 
-        @Override
         public char getChar() {
             return '-';
         }
 
-        @Override
         public double result(double o, double o1) {
             return o - o1;
         }
@@ -241,12 +228,10 @@ public final class GordianRuntime implements Scope {
 
     private static class Multiplication implements Operator {
 
-        @Override
         public char getChar() {
             return '*';
         }
 
-        @Override
         public double result(double o, double o1) {
             return o * o1;
         }
@@ -254,12 +239,10 @@ public final class GordianRuntime implements Scope {
 
     private static class Division implements Operator {
 
-        @Override
         public char getChar() {
             return '/';
         }
 
-        @Override
         public double result(double o, double o1) {
             return o / o1;
         }
@@ -267,12 +250,10 @@ public final class GordianRuntime implements Scope {
 
     private static class Modulus implements Operator {
 
-        @Override
         public char getChar() {
             return '%';
         }
 
-        @Override
         public double result(double o, double o1) {
             return o % o1;
         }

@@ -1,6 +1,6 @@
 package language.internal;
 
-import java.util.List;
+import edu.first.util.list.List;
 import language.instruction.Method;
 
 public interface Methods {

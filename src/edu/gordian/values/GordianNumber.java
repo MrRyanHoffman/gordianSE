@@ -48,7 +48,6 @@ public final class GordianNumber implements Value {
         return !isInt();
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof GordianNumber) {
             return val == ((GordianNumber) obj).val;
@@ -57,14 +56,12 @@ public final class GordianNumber implements Value {
         }
     }
 
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 37 * hash + (int) (Double.doubleToLongBits(this.val) ^ (Double.doubleToLongBits(this.val) >>> 32));
         return hash;
     }
 
-    @Override
     public String toString() {
         if(isInt()) {
             return String.valueOf(getInt());

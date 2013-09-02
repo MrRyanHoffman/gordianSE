@@ -12,7 +12,6 @@ public class GordianDeclaration implements Declaration {
         this.scope = scope;
     }
 
-    @Override
     public Value set(String key, Value val) {
         scope.storage().set(key, val);
         return val;

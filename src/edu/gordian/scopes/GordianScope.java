@@ -24,32 +24,26 @@ public class GordianScope implements Scope {
         this.storage = new GordianStorage(scope.storage());
     }
 
-    @Override
     public Scope parent() {
         return scope;
     }
 
-    @Override
     public Methods methods() {
         return methods;
     }
 
-    @Override
     public Storage storage() {
         return storage;
     }
 
-    @Override
     public void run(String i) {
         GordianRuntime.run(this, i);
     }
 
-    @Override
     public Analyser getAnalyser() {
         return analyser;
     }
 
-    @Override
     public Interpreter getInterpreter() {
         return interpreter;
     }

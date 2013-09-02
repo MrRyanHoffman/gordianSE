@@ -1,7 +1,6 @@
 package edu.gordian.values;
 
 import language.value.Value;
-import java.util.Objects;
 
 public final class GordianString implements Value {
 
@@ -11,7 +10,6 @@ public final class GordianString implements Value {
         this.val = val;
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof GordianString) {
             return ((GordianString) obj).val.equals(val);
@@ -20,14 +18,12 @@ public final class GordianString implements Value {
         }
     }
 
-    @Override
     public int hashCode() {
         int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.val);
+        hash = 29 * hash + this.val.hashCode();
         return hash;
     }
 
-    @Override
     public String toString() {
         return val;
     }
