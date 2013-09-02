@@ -31,6 +31,10 @@ public final class Gordian {
         }
     }
 
+    public Scope getRuntime() {
+        return runtime;
+    }
+
     public void run(String s) {
         runtime.run(s);
     }
