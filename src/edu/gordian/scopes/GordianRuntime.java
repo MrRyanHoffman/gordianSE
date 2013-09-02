@@ -6,8 +6,8 @@ import language.element.Analyser;
 import language.value.Interpreter;
 import language.value.Value;
 import language.instruction.Method;
-import edu.gordian.internal.Methods;
-import edu.gordian.internal.Storage;
+import edu.gordian.internal.GordianMethods;
+import edu.gordian.internal.GordianStorage;
 import edu.gordian.internal.ValueReturned;
 import language.operator.Operator;
 import edu.gordian.values.GordianNull;
@@ -22,8 +22,8 @@ public final class GordianRuntime implements Scope {
 
     private final Analyser analyser = new GordianAnalyser(this);
     private final Interpreter interpreter = new GordianInterpreter(this);
-    private final Methods methods = new Methods();
-    private final Storage storage = new Storage();
+    private final GordianMethods methods = new GordianMethods();
+    private final GordianStorage storage = new GordianStorage();
     private static final Random RANDOM = new Random();
     public static final List operations = Arrays.asList(new Operator[]{
         new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
@@ -159,12 +159,12 @@ public final class GordianRuntime implements Scope {
     }
 
     @Override
-    public Methods methods() {
+    public GordianMethods methods() {
         return methods;
     }
 
     @Override
-    public Storage storage() {
+    public GordianStorage storage() {
         return storage;
     }
 

@@ -3,8 +3,10 @@ package edu.gordian.scopes;
 import edu.gordian.elements.GordianAnalyser;
 import edu.gordian.elements.GordianInterpreter;
 import language.element.Analyser;
-import edu.gordian.internal.Methods;
-import edu.gordian.internal.Storage;
+import edu.gordian.internal.GordianMethods;
+import edu.gordian.internal.GordianStorage;
+import language.internal.Methods;
+import language.internal.Storage;
 import language.scope.Scope;
 import language.value.Interpreter;
 
@@ -18,8 +20,8 @@ public class GordianScope implements Scope {
 
     public GordianScope(Scope scope) {
         this.scope = scope;
-        this.methods = new Methods(scope.methods());
-        this.storage = new Storage(scope.storage());
+        this.methods = new GordianMethods(scope.methods());
+        this.storage = new GordianStorage(scope.storage());
     }
 
     @Override
