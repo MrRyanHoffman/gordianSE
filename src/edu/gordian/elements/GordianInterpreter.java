@@ -37,7 +37,7 @@ public class GordianInterpreter implements Interpreter {
             return new GordianBoolean(false);
         }
 
-        if ((s.startsWith("\"") && s.endsWith("\"") && s.substring(1).indexOf("\"") == s.length() - 2) 
+        if ((s.startsWith("\"") && s.endsWith("\"") && s.substring(1).indexOf("\"") == s.length() - 2)
                 || (s.startsWith("\'") && s.endsWith("\'") && s.substring(1).indexOf("\'") == s.length() - 2)) {
             return new GordianString(s.substring(1, s.length() - 1));
         }
@@ -59,6 +59,16 @@ public class GordianInterpreter implements Interpreter {
         Value v = scope.storage().get(s);
         if (v != null) {
             return v;
+        }
+
+        Iterator i = GordianRuntime.operations.iterator();
+        while (i.hasNext()) {
+            Operator o = (Operator) i.next();
+            String x = o.getChar() + "=";
+            if (s.contains(x)) {
+                s = s.substring(0, s.indexOf(x)) + "="
+                        + s.substring(0, s.indexOf(x)) + o.getChar() + s.substring(s.indexOf(x) + 2);
+            }
         }
 
         if (s.contains("=")
@@ -125,14 +135,9 @@ public class GordianInterpreter implements Interpreter {
             }
         }
 
-        Iterator i = GordianRuntime.operations.iterator();
-        while (i.hasNext()) {
-            Operator o = (Operator) i.next();
-            String x = o.getChar() + "=";
-            if (s.contains(x)) {
-                s = s.substring(0, s.indexOf(x)) + "="
-                        + s.substring(0, s.indexOf(x)) + o.getChar() + s.substring(s.indexOf(x) + 2);
-            }
+        Iterator i1 = GordianRuntime.operations.iterator();
+        while (i1.hasNext()) {
+            Operator o = (Operator) i1.next();
             String op = o.getChar() + "";
             if (s.contains(op)) {
                 return new GordianNumber(o.result(((GordianNumber) interpretValue(s.substring(0, s.indexOf(op)))).getDouble(),
