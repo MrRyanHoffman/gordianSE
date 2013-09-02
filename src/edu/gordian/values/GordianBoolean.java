@@ -18,4 +18,20 @@ public final class GordianBoolean implements Value {
     public String toString() {
         return String.valueOf(val);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof GordianBoolean) {
+            return ((GordianBoolean) obj).val == val;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + (this.val ? 1 : 0);
+        return hash;
+    }
 }

@@ -22,4 +22,10 @@ public final class GordianNull implements Value {
     public String toString() {
         return "null";
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
 }

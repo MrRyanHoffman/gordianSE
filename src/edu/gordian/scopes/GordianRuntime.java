@@ -8,11 +8,14 @@ import edu.gordian.value.Value;
 import edu.gordian.instruction.Method;
 import edu.gordian.internal.Methods;
 import edu.gordian.internal.Storage;
+import edu.gordian.internal.ValueReturned;
 import edu.gordian.operator.Operator;
 import edu.gordian.values.GordianNull;
 import java.util.Arrays;
 import edu.gordian.scope.Scope;
+import edu.gordian.values.GordianNumber;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 public final class GordianRuntime implements Scope {
@@ -21,11 +24,18 @@ public final class GordianRuntime implements Scope {
     private final Interpreter interpreter = new GordianInterpreter(this);
     private final Methods methods = new Methods();
     private final Storage storage = new Storage();
+    private static final Random RANDOM = new Random();
     public static final List operations = Arrays.asList(new Operator[]{
         new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
     });
 
     {
+        methods.put("return", new Method() {
+            @Override
+            public Value run(Value[] args) {
+                throw new ValueReturned(args[0]);
+            }
+        });
         methods.put("print", new Method() {
             @Override
             public Value run(Value[] args) {
@@ -37,14 +47,47 @@ public final class GordianRuntime implements Scope {
                 return null;
             }
         });
+        methods.put("sleep", new Method() {
+            @Override
+            public Value run(Value[] args) {
+                try {
+                    Thread.sleep(((GordianNumber) args[0]).getLong());
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+        });
+        methods.put("rand", new Method() {
+            @Override
+            public Value run(Value[] args) {
+                return new GordianNumber(RANDOM.nextDouble());
+            }
+        });
+        methods.put("randint", new Method() {
+            @Override
+            public Value run(Value[] args) {
+                return new GordianNumber(RANDOM.nextInt());
+            }
+        });
+        methods.put("int", new Method() {
+            @Override
+            public Value run(Value[] args) {
+                return new GordianNumber(((GordianNumber) args[0]).getInt());
+            }
+        });
         storage.put("null", GordianNull.get());
     }
 
     @Override
-    public void run(String i) {
+    public Scope parent() {
+        return null;
+    }
+
+    public static void run(Scope s, String i) {
         i = pre(i);
         if ((i.indexOf(";") == i.lastIndexOf(";")) && (i.indexOf(";") == i.length() - 1)) {
-            getAnalyser().analyseInstruction(i.substring(0, i.length() - 1));
+            s.getAnalyser().analyseInstruction(i.substring(0, i.length() - 1));
         } else {
             StringTokenizer tokenizer = new StringTokenizer(i, ";");
             while (tokenizer.hasMoreElements()) {
@@ -63,14 +106,19 @@ public final class GordianRuntime implements Scope {
                     }
                     String f = buffer.toString();
                     if (f.endsWith("fi;")) {
-                        f = f.substring(0, f.length() - 4);
+                        f = f.substring(0, f.length() - 3);
                     }
-                    getAnalyser().analyseBlock(f);
+                    s.getAnalyser().analyseBlock(f);
                 } else {
-                    run(t + ";");
+                    s.run(t + ";");
                 }
             }
         }
+    }
+
+    @Override
+    public void run(String i) {
+        run(this, i);
     }
 
     @Override
@@ -115,7 +163,7 @@ public final class GordianRuntime implements Scope {
         boolean inQuotes = false;
         x += a.substring(x).indexOf(' ');
         for (int i = 0; i < x; i++) {
-            if (a.charAt(i) == '"') {
+            if (a.charAt(i) == '\"' || a.charAt(i) == '\'') {
                 inQuotes = !inQuotes;
             } else if (a.charAt(i) == ';') {
                 inQuotes = false;
@@ -130,7 +178,7 @@ public final class GordianRuntime implements Scope {
                 x = a.substring(x + 1).indexOf(' ') + x + 1;
             }
         }
-
+        
         if (a.substring(x).contains(" ")) {
             return removeSpaces(a, x);
         }

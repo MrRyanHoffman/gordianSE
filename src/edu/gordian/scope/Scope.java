@@ -7,6 +7,8 @@ import edu.gordian.value.Interpreter;
 
 public interface Scope {
 
+    public Scope parent();
+
     public Methods methods();
 
     public Storage storage();

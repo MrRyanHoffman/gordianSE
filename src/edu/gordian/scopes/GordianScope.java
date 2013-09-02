@@ -23,6 +23,11 @@ public class GordianScope implements Scope {
     }
 
     @Override
+    public Scope parent() {
+        return scope;
+    }
+
+    @Override
     public Methods methods() {
         return methods;
     }
@@ -34,7 +39,7 @@ public class GordianScope implements Scope {
 
     @Override
     public void run(String i) {
-        scope.run(i);
+        GordianRuntime.run(this, i);
     }
 
     @Override
