@@ -1,5 +1,6 @@
 package edu.gordian.internal;
 
+import edu.gordian.scopes.GordianRuntime;
 import edu.gordian.value.Value;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,12 +18,14 @@ public final class Storage {
     }
 
     public Value put(String key, Value value) {
+        GordianRuntime.testName(key);
         Value old = get(key);
         nodes.add(new Node(key, value));
         return old;
     }
 
     public Value set(String key, Value value) {
+        GordianRuntime.testName(key);
         Value old = get(key);
         if (old == null) {
             nodes.add(new Node(key, value));

@@ -1,6 +1,7 @@
 package edu.gordian.internal;
 
 import edu.gordian.instruction.Method;
+import edu.gordian.scopes.GordianRuntime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ public final class Methods {
     }
 
     public void put(String key, Method method) {
+        GordianRuntime.testName(key);
         nodes.add(new Node(key, method));
     }
 

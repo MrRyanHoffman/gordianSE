@@ -84,6 +84,33 @@ public final class GordianRuntime implements Scope {
         return null;
     }
 
+    public static void testName(String s) {
+        if (!isValidName(s)) {
+            throw new IllegalStateException("\"" + s + "\" is not a valid variable/method name.");
+        }
+    }
+
+    public static boolean isValidName(String s) {
+        return !(s.isEmpty()
+                || s.contains("=")
+                || s.contains(":")
+                || s.contains("+")
+                || s.contains("-")
+                || s.contains("*")
+                || s.contains("/")
+                || s.contains(">")
+                || s.contains("<")
+                || s.contains("&")
+                || s.contains("|")
+                || s.contains("!")
+                || s.contains("(")
+                || s.contains(")")
+                || s.contains("\"")
+                || s.contains("\'")
+                || s.equalsIgnoreCase("true")
+                || s.equalsIgnoreCase("false"));
+    }
+
     public static void run(Scope s, String i) {
         i = pre(i);
         if ((i.indexOf(";") == i.lastIndexOf(";")) && (i.indexOf(";") == i.length() - 1)) {
@@ -178,7 +205,7 @@ public final class GordianRuntime implements Scope {
                 x = a.substring(x + 1).indexOf(' ') + x + 1;
             }
         }
-        
+
         if (a.substring(x).contains(" ")) {
             return removeSpaces(a, x);
         }
