@@ -1,5 +1,6 @@
 package edu.gordian.values;
 
+import edu.first.util.Strings;
 import language.value.Value;
 
 public final class GordianString implements Value {
@@ -7,10 +8,8 @@ public final class GordianString implements Value {
     private final String val;
 
     public GordianString(String val) {
-        this.val = val
-                .replaceAll("\\\\\"", "\"")
-                .replaceAll("\\\\t", "\t")
-                .replaceAll("\\\\n", "\n");
+        this.val = Strings.replaceAll(Strings.replaceAll(Strings.replaceAll(val,
+                "\\\\\"", "\""), "\\\\t", "\t"), "\\\\n", "\n");
     }
 
     public boolean equals(Object obj) {
