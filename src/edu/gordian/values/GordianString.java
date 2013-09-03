@@ -7,7 +7,10 @@ public final class GordianString implements Value {
     private final String val;
 
     public GordianString(String val) {
-        this.val = val;
+        this.val = val
+                .replaceAll("\\\\\"", "\"")
+                .replaceAll("\\\\t", "\t")
+                .replaceAll("\\\\n", "\n");
     }
 
     public boolean equals(Object obj) {

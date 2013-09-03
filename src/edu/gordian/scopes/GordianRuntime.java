@@ -181,7 +181,7 @@ public final class GordianRuntime implements Scope {
         boolean inQuotes = false;
         x += a.substring(x).indexOf(' ');
         for (int i = 0; i < x; i++) {
-            if (a.charAt(i) == '\"' || a.charAt(i) == '\'') {
+            if ((a.charAt(i) == '\"' || a.charAt(i) == '\'') && a.charAt(i - 1) != '\\') {
                 inQuotes = !inQuotes;
             } else if (a.charAt(i) == ';') {
                 inQuotes = false;

@@ -14,6 +14,15 @@ build/
 nbbuild/
 dist/
 nbdist/
-build.xml
 nbactions.xml
 nb-configuration.xml
+build.xml
+build.properties
+
+
+### vim ###
+.*.s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
