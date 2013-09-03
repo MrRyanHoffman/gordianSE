@@ -1,7 +1,9 @@
 package edu.gordian.elements;
 
 import edu.first.util.Strings;
+import edu.first.util.list.ArrayList;
 import edu.first.util.list.Iterator;
+import edu.first.util.list.List;
 import language.instruction.Method;
 import edu.gordian.instructions.GordianDeclaration;
 import language.operator.Operator;
@@ -49,9 +51,10 @@ public class GordianInterpreter implements Interpreter {
         if (s.indexOf("(") > 0 && s.charAt(s.length() - 1) == ')') {
             Method m = scope.methods().get(s.substring(0, s.indexOf("(")));
             if (m != null) {
-                return m.run(scope, scope.getInterpreter().interpretValues(Strings.split(s.substring(s.indexOf("(") + 1, s.lastIndexOf(')')), ",")));
+                return m.run(scope, scope.getInterpreter().interpretValues(getArgs(s.substring(s.indexOf("(") + 1, s.lastIndexOf(')')))));
             }
         }
+
         Value v = scope.storage().get(s);
         if (v != null) {
             return v;
@@ -183,5 +186,38 @@ public class GordianInterpreter implements Interpreter {
             v[x] = interpretValue(s[x]);
         }
         return v;
+    }
+
+    private String[] getArgs(String s) {
+        if (!Strings.contains(s, '\"') && !Strings.contains(s, '(')) {
+            return Strings.split(s, ',');
+        } else {
+            List l = new ArrayList();
+            boolean inQuotes = false;
+            int paren = 0;
+            int last = 0;
+            char[] d = s.toCharArray();
+            for (int x = 0; x < d.length; x++) {
+                if (d[x] == '\"') {
+                    inQuotes = !inQuotes;
+                } else if (d[x] == '(') {
+                    paren++;
+                } else if (d[x] == ')') {
+                    paren--;
+                }
+                if (d[x] == ',' && !inQuotes && paren == 0 && !Strings.isEmpty(s.substring(last, x))) {
+                    l.add(s.substring(last, x));
+                    last = x + 1;
+                }
+                if (x == d.length - 1 && !Strings.isEmpty(s.substring(last))) {
+                    l.add(s.substring(last));
+                }
+            }
+            String[] args = new String[l.size()];
+            for (int x = 0; x < args.length; x++) {
+                args[x] = (String) l.get(x);
+            }
+            return args;
+        }
     }
 }
