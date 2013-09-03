@@ -43,7 +43,11 @@ public final class GordianRuntime implements Scope {
         });
         methods.put("int", new Method() {
             public Value run(Value[] args) {
-                return new GordianNumber(((GordianNumber) args[0]).getInt());
+                if (args[0] instanceof GordianNumber) {
+                    return new GordianNumber(((GordianNumber) args[0]).getInt());
+                } else {
+                    return new GordianNumber(GordianNumber.toNumber(args[0].toString()).getInt());
+                }
             }
         });
         methods.put("num", new Method() {
