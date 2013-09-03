@@ -12,10 +12,12 @@ import language.instruction.Method;
 import edu.gordian.internal.GordianMethods;
 import edu.gordian.internal.GordianStorage;
 import edu.gordian.internal.ValueReturned;
+import edu.gordian.values.GordianBoolean;
 import language.operator.Operator;
 import edu.gordian.values.GordianNull;
 import language.scope.Scope;
 import edu.gordian.values.GordianNumber;
+import edu.gordian.values.GordianString;
 import java.util.Random;
 import java.util.StringTokenizer;
 import language.internal.Methods;
@@ -33,9 +35,30 @@ public final class GordianRuntime implements Scope {
     });
 
     {
+        storage.set("null", GordianNull.get());
         methods.put("return", new Method() {
             public Value run(Value[] args) {
                 throw new ValueReturned(args[0]);
+            }
+        });
+        methods.put("int", new Method() {
+            public Value run(Value[] args) {
+                return new GordianNumber(((GordianNumber) args[0]).getInt());
+            }
+        });
+        methods.put("num", new Method() {
+            public Value run(Value[] args) {
+                return new GordianNumber(((GordianNumber) args[0]).getDouble());
+            }
+        });
+        methods.put("bool", new Method() {
+            public Value run(Value[] args) {
+                return new GordianBoolean(((GordianBoolean) args[0]).get());
+            }
+        });
+        methods.put("str", new Method() {
+            public Value run(Value[] args) {
+                return new GordianString(args[0].toString());
             }
         });
         methods.put("print", new Method() {
@@ -68,12 +91,6 @@ public final class GordianRuntime implements Scope {
                 return new GordianNumber(RANDOM.nextInt());
             }
         });
-        methods.put("int", new Method() {
-            public Value run(Value[] args) {
-                return new GordianNumber(((GordianNumber) args[0]).getInt());
-            }
-        });
-        storage.set("null", GordianNull.get());
     }
 
     public Scope parent() {
