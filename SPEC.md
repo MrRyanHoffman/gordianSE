@@ -195,3 +195,5 @@ There cannot be arguments in construction. As you can tell, you can access varia
     myinstance.foo(12)
 
 Remember that `Example` is registered as a variable in Gordian. You should not shadow its value if you want to use the class.
+
+Nested classes clone all values and methods from their external scope. Changing any value inside of a class *only* affects it inside of that class.
