@@ -106,23 +106,21 @@ public class GordianInterpreter implements Interpreter {
             }
         }
 
-        // Object access
-        if (s.indexOf(".") > 0 && s.indexOf(".") < s.length() - 1) {
-            Scope call;
-            // Super
-            if (s.substring(0, s.indexOf(".")).equals("super")) {
-                call = scope.parent();
-            } else {
-                call = ((language.scope.Class) scope.storage().get(s.substring(0, s.indexOf("."))));
+        // Methods
+        int c = 0;
+        boolean method = false;
+        for (int x = s.indexOf("("); x < s.length(); x++) {
+            if (s.charAt(x) == '(') {
+                c++;
+            } else if (s.charAt(x) == ')') {
+                c--;
             }
-            String r = s.substring(s.indexOf(".") + 1);
-            if (call != null) {
-                return call.getInterpreter().interpretValue(r);
+            if (c == 0) {
+                method = (x == s.length() - 1);
+                break;
             }
         }
-
-        // Methods
-        if (s.indexOf("(") > 0 && s.charAt(s.length() - 1) == ')') {
+        if (method) {
             Method m = scope.methods().get(s.substring(0, s.indexOf("(")));
             if (m != null) {
                 return m.run(scope, getArgs(betweenMatch(s, '(', ')')));
@@ -179,6 +177,21 @@ public class GordianInterpreter implements Interpreter {
                 return new GordianString(d1.toString() + d2.toString());
             } catch (Exception e) {
                 // value was not two values
+            }
+        }
+
+        // Object access
+        if (s.indexOf(".") > 0 && s.indexOf(".") < s.length() - 1) {
+            Scope call;
+            // Super
+            if (s.substring(0, s.indexOf(".")).equals("super")) {
+                call = scope.parent();
+            } else {
+                call = ((language.scope.Class) scope.getInterpreter().interpretValue(s.substring(0, s.indexOf("."))));
+            }
+            String r = s.substring(s.indexOf(".") + 1);
+            if (call != null) {
+                return call.getInterpreter().interpretValue(r);
             }
         }
 
