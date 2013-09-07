@@ -7,6 +7,7 @@ import edu.first.util.list.List;
 import edu.gordian.instructions.GordianDeclaration;
 import edu.gordian.scopes.GordianRuntime;
 import edu.gordian.values.GordianBoolean;
+import edu.gordian.values.GordianClass;
 import edu.gordian.values.GordianNumber;
 import edu.gordian.values.GordianString;
 import language.instruction.Method;
@@ -28,8 +29,25 @@ public class GordianInterpreter implements Interpreter {
             return new GordianString(s);
         }
 
+        // Literals
+        GordianNumber n = GordianNumber.toNumber(s);
+        if (n != null) {
+            return n;
+        }
+
+        if (s.equalsIgnoreCase("true")) {
+            return new GordianBoolean(true);
+        } else if (s.equalsIgnoreCase("false")) {
+            return new GordianBoolean(false);
+        }
+
+        if ((s.startsWith("\"") && s.endsWith("\""))
+                || (s.startsWith("\'") && s.endsWith("\'"))) {
+            return new GordianString(s.substring(1, s.length() - 1));
+        }
+
         if (Strings.contains(s, '(') && Strings.contains(s, ')')
-                && (s.indexOf('(') == 0 || !GordianRuntime.isAllLetters("" + s.charAt(s.indexOf('(') - 1)))) {
+                && (s.indexOf('(') == 0 || !GordianRuntime.isValidCharacters("" + s.charAt(s.indexOf('(') - 1)))) {
             // Parentheses
             return scope.getInterpreter().interpretValue(
                     s.substring(0, s.indexOf('('))
@@ -40,6 +58,34 @@ public class GordianInterpreter implements Interpreter {
         if (s.startsWith("!")) {
             // Adjustments
             return new GordianBoolean(!((GordianBoolean) scope.getInterpreter().interpretValue(s.substring(1))).get());
+        }
+
+        // Declarations
+        Iterator i = GordianRuntime.operations.iterator();
+        while (i.hasNext()) {
+            Operator o = (Operator) i.next();
+            String x = o.getChar() + "=";
+            if (Strings.contains(s, x)) {
+                s = s.substring(0, s.indexOf(x)) + "="
+                        + s.substring(0, s.indexOf(x)) + o.getChar() + s.substring(s.indexOf(x) + 2);
+            }
+        }
+        if (Strings.contains(s, "=")
+                && GordianRuntime.isValidCharacters("" + s.charAt(s.indexOf("=") - 1))) {
+            if (Strings.contains(s.substring(0, s.indexOf("=")), ".")) {
+                Scope call;
+                // Super
+                if (s.substring(0, s.indexOf(".")).equals("super")) {
+                    call = scope.parent();
+                } else {
+                    call = ((language.scope.Class) scope.storage().get(s.substring(0, s.indexOf("."))));
+                }
+                // Internal variable
+                return call.getInterpreter().interpretValue(s.substring(s.indexOf(".") + 1, s.indexOf("=") + 1)
+                        + scope.getInterpreter().interpretValue(s.substring(s.indexOf("=") + 1)).toString());
+            }
+            return new GordianDeclaration(scope).set(s.substring(0, s.indexOf("=")),
+                    scope.getInterpreter().interpretValue(s.substring(s.indexOf("=") + 1)));
         }
 
         s = Strings.replaceAll(s, "--", "+");
@@ -60,20 +106,19 @@ public class GordianInterpreter implements Interpreter {
             }
         }
 
-        // Declarations
-        Iterator i = GordianRuntime.operations.iterator();
-        while (i.hasNext()) {
-            Operator o = (Operator) i.next();
-            String x = o.getChar() + "=";
-            if (Strings.contains(s, x)) {
-                s = s.substring(0, s.indexOf(x)) + "="
-                        + s.substring(0, s.indexOf(x)) + o.getChar() + s.substring(s.indexOf(x) + 2);
+        // Object access
+        if (s.indexOf(".") > 0 && s.indexOf(".") < s.length() - 1) {
+            Scope call;
+            // Super
+            if (s.substring(0, s.indexOf(".")).equals("super")) {
+                call = scope.parent();
+            } else {
+                call = ((language.scope.Class) scope.storage().get(s.substring(0, s.indexOf("."))));
             }
-        }
-        if (Strings.contains(s, "=")
-                && GordianRuntime.isAllLetters("" + s.charAt(s.indexOf("=") - 1))) {
-            return new GordianDeclaration(scope).set(s.substring(0, s.indexOf("=")),
-                    scope.getInterpreter().interpretValue(s.substring(s.indexOf("=") + 1)));
+            String r = s.substring(s.indexOf(".") + 1);
+            if (call != null) {
+                return call.getInterpreter().interpretValue(r);
+            }
         }
 
         // Methods
@@ -81,6 +126,14 @@ public class GordianInterpreter implements Interpreter {
             Method m = scope.methods().get(s.substring(0, s.indexOf("(")));
             if (m != null) {
                 return m.run(scope, getArgs(betweenMatch(s, '(', ')')));
+            }
+        }
+
+        // Constructors
+        if (s.startsWith("[") && s.endsWith("]")) {
+            Value v = scope.storage().get(s.substring(1, s.length() - 1));
+            if (v != null) {
+                return ((GordianClass) v).construct();
             }
         }
 
@@ -127,23 +180,6 @@ public class GordianInterpreter implements Interpreter {
             } catch (Exception e) {
                 // value was not two values
             }
-        }
-
-        // Literals
-        GordianNumber n = GordianNumber.toNumber(s);
-        if (n != null) {
-            return n;
-        }
-
-        if (s.equalsIgnoreCase("true")) {
-            return new GordianBoolean(true);
-        } else if (s.equalsIgnoreCase("false")) {
-            return new GordianBoolean(false);
-        }
-
-        if ((s.startsWith("\"") && s.endsWith("\""))
-                || (s.startsWith("\'") && s.endsWith("\'"))) {
-            return new GordianString(s.substring(1, s.length() - 1));
         }
 
         // Variables
