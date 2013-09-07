@@ -60,7 +60,36 @@ public class GordianInterpreter implements Interpreter {
             return new GordianBoolean(!((GordianBoolean) scope.getInterpreter().interpretValue(s.substring(1))).get());
         }
 
+        // Methods
+        if (s.indexOf("(") > 0 && s.indexOf(")") == s.length() - 1) {
+            int c = 0;
+            boolean method = false;
+            for (int x = s.indexOf("("); x < s.length(); x++) {
+                if (s.charAt(x) == '(') {
+                    c++;
+                } else if (s.charAt(x) == ')') {
+                    c--;
+                }
+                if (c == 0) {
+                    method = (x == s.length() - 1);
+                    break;
+                }
+            }
+            if (method) {
+                Method m = scope.methods().get(s.substring(0, s.indexOf("(")));
+                if (m != null) {
+                    return m.run(scope, getArgs(betweenMatch(s, '(', ')')));
+                }
+            }
+        }
+
         // Declarations
+        if (Strings.contains(s, "++")) {
+            s = s.substring(0, s.indexOf("++")) + "+=1" + s.substring(s.indexOf("++") + 2);
+        }
+        if (Strings.contains(s, "--")) {
+            s = s.substring(0, s.indexOf("--")) + "-=1" + s.substring(s.indexOf("--") + 2);
+        }
         Iterator i = GordianRuntime.operations.iterator();
         while (i.hasNext()) {
             Operator o = (Operator) i.next();
@@ -103,27 +132,6 @@ public class GordianInterpreter implements Interpreter {
                 } catch (ClassCastException ex) {
                     // Was not a number... Try concatenation
                 }
-            }
-        }
-
-        // Methods
-        int c = 0;
-        boolean method = false;
-        for (int x = s.indexOf("("); x < s.length(); x++) {
-            if (s.charAt(x) == '(') {
-                c++;
-            } else if (s.charAt(x) == ')') {
-                c--;
-            }
-            if (c == 0) {
-                method = (x == s.length() - 1);
-                break;
-            }
-        }
-        if (method) {
-            Method m = scope.methods().get(s.substring(0, s.indexOf("(")));
-            if (m != null) {
-                return m.run(scope, getArgs(betweenMatch(s, '(', ')')));
             }
         }
 
