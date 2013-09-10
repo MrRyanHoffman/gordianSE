@@ -26,6 +26,8 @@ public class GordianInstance implements Instance {
         this.parent = inheret;
         this.methods = new GordianMethods(inheret.methods());
         this.storage = new GordianStorage(inheret.storage());
+        
+        this.storage.put("parent", inheret);
 
         run(internals);
     }
