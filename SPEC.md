@@ -202,7 +202,21 @@ There cannot be arguments in construction. As you can tell, you can access varia
 
 Remember that `Example` is registered as a variable in Gordian. You should not shadow its value if you want to use the class.
 
-Classes clone all values and methods from their external scope. Changing any value inside of a class *only* affects it inside of that class.
+Classes do not bring external methods or variables in like other scopes. In order to do so, use inheritance:
+
+    class Parent:
+        x = 1
+    fi
+
+    class Example(Parent):
+        def p():
+            print(x)
+        fi
+    fi
+
+Calling `p()` on an instance of `Example` will print `1`.
+
+To access native functions of a parent class, use the `parent` keyword. The functions will work in the context of your current class (ex. shadowing value `x` will change behaviour)
 
 # Libraries
 
