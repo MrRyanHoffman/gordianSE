@@ -13,7 +13,7 @@ public final class GordianClass extends EmptyInstance implements ClassGenerator 
     private final String internals;
 
     public static void run(Scope scope, String s) {
-        if (s.substring(0, s.indexOf(";")).contains("(")) {
+        if (Strings.contains(s.substring(0, s.indexOf(";")), "(")) {
             String inheret = s.substring(0, s.indexOf(";"));
             inheret = inheret.substring(inheret.indexOf("(") + 1, inheret.lastIndexOf(')'));
             if (Strings.isEmpty(inheret)) {
@@ -25,9 +25,9 @@ public final class GordianClass extends EmptyInstance implements ClassGenerator 
                     ((ClassGenerator) scope.getInterpreter().interpretValue(inheret)).construct(),
                     s.substring(s.indexOf(";") + 1)));
         } else {
-            scope.storage().put(s.substring(5, s.indexOf(":")), new GordianClass(scope, s.substring(s.indexOf(";") + 1)));
+            scope.storage().put(s.substring(5, s.indexOf(":")), 
+                    new GordianClassFactory().setScope(scope).setInternals(s.substring(s.indexOf(";") + 1)).toClass());
         }
-
     }
 
     public GordianClass(Scope scope, Instance inheret, String internals) {
@@ -36,17 +36,11 @@ public final class GordianClass extends EmptyInstance implements ClassGenerator 
         this.internals = internals;
     }
 
-    public GordianClass(Scope scope, String internals) {
-        this.scope = scope;
-        this.inheret = null;
-        this.internals = internals;
-    }
-
     public Instance construct() {
         if (inheret != null) {
-            return new GordianInstance(scope, inheret, internals);
+            return new GordianInstanceFactory().setScope(scope).setParent(inheret).toInstance(internals);
         } else {
-            return new GordianInstance(scope, internals);
+            return new GordianInstanceFactory().setScope(scope).toInstance(internals);
         }
     }
 }
