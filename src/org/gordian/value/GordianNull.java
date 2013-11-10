@@ -23,6 +23,14 @@ public class GordianNull extends GordianObject {
         return DummyParent.INSTANCE;
     }
 
+    public Object parent() {
+        return null;
+    }
+
+    public String toString() {
+        return "null";
+    }
+
     private static final class DummyParent extends GordianClass {
 
         private static final DummyParent INSTANCE = new DummyParent();

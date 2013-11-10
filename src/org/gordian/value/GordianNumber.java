@@ -27,7 +27,7 @@ public class GordianNumber extends GordianObject {
     public int getInt() {
         return (int) val;
     }
-    
+
     public long getLong() {
         return (long) val;
     }
@@ -42,6 +42,14 @@ public class GordianNumber extends GordianObject {
 
     public Class parentClass() {
         return DummyParent.INSTANCE;
+    }
+
+    public Object parent() {
+        return null;
+    }
+
+    public String toString() {
+        return String.valueOf(val);
     }
 
     private static final class DummyParent extends GordianClass {

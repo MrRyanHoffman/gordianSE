@@ -25,8 +25,9 @@ public interface Variables {
      *
      * @param name user name for the object
      * @param object object to store
+     * @return {@code object}
      */
-    public void put(String name, Object object);
+    public Object put(String name, Object object);
 
     /**
      * Stores the object as the name. This method will overwrite any existing
@@ -34,8 +35,9 @@ public interface Variables {
      *
      * @param name user name for the object
      * @param object object to store
+     * @return {@code object}
      */
-    public void set(String name, Object object);
+    public Object set(String name, Object object);
 
     /**
      * Removes the object with the given name. This method will only remove the

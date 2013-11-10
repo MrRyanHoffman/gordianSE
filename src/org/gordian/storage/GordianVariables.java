@@ -12,24 +12,42 @@ import org.gordian.value.GordianNull;
  */
 public class GordianVariables implements Variables {
 
-    private final GordianStorage storage = new GordianStorage();
+    private final GordianStorage storage;
 
-    {
+    private final void init() {
         storage.reserve("null", new GordianNull());
         storage.reserve("true", GordianBoolean.TRUE);
+        storage.reserve("True", GordianBoolean.TRUE);
         storage.reserve("false", GordianBoolean.FALSE);
+        storage.reserve("False", GordianBoolean.FALSE);
     }
-    
+
+    public GordianVariables(boolean empty) {
+        storage = new GordianStorage();
+        if (!empty) {
+            init();
+        }
+    }
+
+    public GordianVariables() {
+        storage = new GordianStorage();
+        init();
+    }
+
+    public GordianVariables(GordianVariables variables) {
+        storage = new GordianStorage(variables.storage);
+    }
+
     public Object get(String name) throws InternalNotFoundException {
         return (Object) storage.get(name);
     }
 
-    public void put(String name, Object object) {
-        storage.put(name, object);
+    public Object put(String name, Object object) {
+        return (Object) storage.put(name, object);
     }
 
-    public void set(String name, Object object) {
-        storage.set(name, object);
+    public Object set(String name, Object object) {
+        return (Object) storage.set(name, object);
     }
 
     public void remove(String name) throws InternalNotFoundException {

@@ -10,6 +10,8 @@ import api.gordian.storage.Methods;
 import java.util.Random;
 import org.gordian.GordianClass;
 import org.gordian.method.GordianMethod;
+import org.gordian.scope.Break;
+import org.gordian.scope.GordianScope;
 import org.gordian.value.GordianBoolean;
 import org.gordian.value.GordianNumber;
 import org.gordian.value.GordianString;
@@ -20,10 +22,25 @@ import org.gordian.value.GordianString;
  */
 public class GordianMethods implements Methods {
 
-    private final GordianStorage storage = new GordianStorage();
+    private final GordianStorage storage;
 
-    {
+    private final void init() {
         final Random RANDOM = new Random();
+        storage.reserve("exit", new GordianMethod(
+                new Signature(
+                        new Class[]{GordianNumber.CLASS}
+                )) {
+                    public Object run(Object[] args) {
+                        System.exit(((GordianNumber) args[0]).getInt());
+                        return null;
+                    }
+                });
+        storage.reserve("time", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianNumber(System.currentTimeMillis());
+                    }
+                });
         storage.reserve("return", new GordianMethod(
                 new Signature(
                         new Class[]{GordianClass.ALL_CLASSES}
@@ -33,6 +50,12 @@ public class GordianMethods implements Methods {
                     }
                 }
         );
+        storage.reserve("break", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        throw new Break();
+                    }
+                });
         storage.reserve("delete", new GordianMethod(
                 new Signature(
                         new Class[]{GordianString.CLASS}
@@ -43,6 +66,15 @@ public class GordianMethods implements Methods {
                         } catch (InternalNotFoundException ex) {
                             ex.printStackTrace();
                         }
+                        return null;
+                    }
+                });
+        storage.reserve("eval", new GordianMethod(
+                new Signature(
+                        new Class[]{GordianString.CLASS}
+                )) {
+                    public Object run(Object[] args) {
+                        new GordianScope().run(((GordianString) args[0]).getValue());
                         return null;
                     }
                 });
@@ -78,6 +110,14 @@ public class GordianMethods implements Methods {
                         return new GordianString(args[0].toString());
                     }
                 });
+        storage.reserve("concat", new GordianMethod(
+                new Signature(
+                        new Class[]{GordianString.CLASS, GordianString.CLASS}
+                )) {
+                    public Object run(Object[] args) {
+                        return new GordianString(args[0].toString() + args[1].toString());
+                    }
+                });
         storage.reserve("print", new GordianMethod(
                 new Signature(
                         new Class[]{GordianClass.ALL_CLASSES}
@@ -101,21 +141,33 @@ public class GordianMethods implements Methods {
                     }
                 });
         storage.reserve("rand", new GordianMethod(
-                new Signature(
-                        new Class[]{GordianNumber.CLASS}
-                )) {
+                new Signature()) {
                     public Object run(Object[] args) {
                         return new GordianNumber(RANDOM.nextDouble());
                     }
                 });
         storage.reserve("randInt", new GordianMethod(
-                new Signature(
-                        new Class[]{GordianNumber.CLASS}
-                )) {
+                new Signature()) {
                     public Object run(Object[] args) {
                         return new GordianNumber(RANDOM.nextInt());
                     }
                 });
+    }
+
+    public GordianMethods(boolean empty) {
+        storage = new GordianStorage();
+        if (!empty) {
+            init();
+        }
+    }
+
+    public GordianMethods() {
+        storage = new GordianStorage();
+        init();
+    }
+
+    public GordianMethods(GordianMethods methods) {
+        storage = new GordianStorage(methods.storage);
     }
 
     public Method get(String name) throws InternalNotFoundException {

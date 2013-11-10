@@ -16,8 +16,7 @@ public interface Object {
      *
      * @param name the user name for the method
      * @return method for user to run
-     * @throws InternalNotFoundException when name is not a
-     * valid method
+     * @throws InternalNotFoundException when name is not a valid method
      */
     public Method getMethod(String name) throws InternalNotFoundException;
 
@@ -50,6 +49,8 @@ public interface Object {
      * @return class object that made this object
      */
     public Class parentClass();
+
+    public Object parent();
 
     /**
      * Returns an easy to read formatted string with information about what this
