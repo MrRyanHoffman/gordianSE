@@ -54,8 +54,4 @@ public abstract class GordianClass extends GordianObject implements Class {
         return parent;
     }
 
-    public Object parent() {
-        return GordianClass.this;
-    }
-
 }

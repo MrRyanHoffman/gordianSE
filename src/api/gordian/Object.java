@@ -1,7 +1,7 @@
 package api.gordian;
 
-import api.gordian.methods.Method;
-import api.gordian.storage.InternalNotFoundException;
+import api.gordian.storage.Methods;
+import api.gordian.storage.Variables;
 
 /**
  * The basic representation of all values in Gordian. Primitives, classes and
@@ -11,23 +11,9 @@ import api.gordian.storage.InternalNotFoundException;
  */
 public interface Object {
 
-    /**
-     * Accesses the method located inside of this object.
-     *
-     * @param name the user name for the method
-     * @return method for user to run
-     * @throws InternalNotFoundException when name is not a valid method
-     */
-    public Method getMethod(String name) throws InternalNotFoundException;
+    public Methods methods();
 
-    /**
-     * Accesses the variable located inside of this object.
-     *
-     * @param name the user name for the variable
-     * @return object being stored
-     * @throws InternalNotFoundException when name is not a valid variable
-     */
-    public Object getVariable(String name) throws InternalNotFoundException;
+    public Variables variables();
 
     /**
      * Whether the object is semantically "equal" to another. Typically, this
@@ -49,8 +35,6 @@ public interface Object {
      * @return class object that made this object
      */
     public Class parentClass();
-
-    public Object parent();
 
     /**
      * Returns an easy to read formatted string with information about what this

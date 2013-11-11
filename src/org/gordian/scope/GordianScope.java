@@ -4,7 +4,6 @@ import api.gordian.Arguments;
 import api.gordian.Class;
 import api.gordian.Object;
 import api.gordian.Scope;
-import api.gordian.Signature;
 import api.gordian.methods.Method;
 import api.gordian.storage.InternalNotFoundException;
 import api.gordian.storage.Methods;
@@ -14,10 +13,13 @@ import edu.first.util.list.ArrayList;
 import edu.first.util.list.Collections;
 import edu.first.util.list.Iterator;
 import edu.first.util.list.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gordian.GordianClass;
 import org.gordian.storage.GordianMethods;
 import org.gordian.storage.GordianVariables;
 import org.gordian.value.GordianBoolean;
+import org.gordian.value.GordianList;
 import org.gordian.value.GordianNumber;
 import org.gordian.value.GordianString;
 
@@ -88,14 +90,55 @@ public class GordianScope implements Scope {
     }
 
     public static boolean isMethod(String s) {
-        // Methods start with a name, the a ( and ends with a ). ( and )s should match.
-        if (s.endsWith(";")) {
-            s = s.substring(0, s.length() - 1);
+        if (s.indexOf("(") > 0 && s.lastIndexOf(')') == s.length() - 1 && isName(s.substring(0, s.indexOf("(")))) {
+            int c = 0;
+            boolean method = false;
+            for (int x = s.indexOf("("); x < s.length(); x++) {
+                if (s.charAt(x) == '(') {
+                    c++;
+                } else if (s.charAt(x) == ')') {
+                    c--;
+                }
+                if (c == 0) {
+                    method = (x == s.length() - 1);
+                    break;
+                }
+            }
+            return method;
+        } else {
+            return false;
         }
-        return Strings.contains(s, '(') && Strings.contains(s, ')')
-                && Strings.allIndexesOf(s, '(').length == Strings.allIndexesOf(s, ')').length
-                && s.endsWith(")")
-                && isName(s.substring(0, s.indexOf('(')));
+    }
+
+    public static String[] findConstructors(String s) {
+        List l = new ArrayList();
+        String next = findNextConstructor(s);
+        while (next != null) {
+            l.add(next);
+            if (s.length() > next.length()) {
+                s = s.substring(next.length());
+            }
+            next = findNextConstructor(s);
+        }
+
+        String[] strings = new String[l.size()];
+        System.arraycopy(l.toArray(), 0, strings, 0, l.size());
+        return strings;
+    }
+
+    private static String findNextConstructor(String s) {
+        if (!Strings.isEmpty(s) && !s.equals(";")) {
+            String next = next(s);
+            if (next.startsWith("defconstruct(")) {
+                return next;
+            } else if (s.length() > next.length()) {
+                return findNextConstructor(s.substring(next.length()));
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     public static String next(String s) {
@@ -222,27 +265,26 @@ public class GordianScope implements Scope {
 
         s = convertStrings(s);
 
-        int a = s.indexOf(" "), y = a;
-        boolean found = false;
-        while (a >= 0) {
-            String stub = s.substring(y);
+        int y = s.indexOf(" ");
+        while (y >= 0) {
+            boolean found = false;
             for (int k = 0; k < keywords.length; k++) {
-                if (a - keywords[k].length() >= 0 && s.substring(a - keywords[k].length(), a).equals(keywords[k])) {
-                    // Proven wrong - keyword proceeded the space
+                if (y - keywords[k].length() >= 0 && s.substring(y - keywords[k].length(), y).equals(keywords[k])) {
+                    // Proven wrong - keyword preceeded the space
                     found = true;
                     break;
                 }
             }
             if (!found) {
                 s = s.substring(0, y) + s.substring(y + 1);
-                stub = stub.substring(1);
-                y -= 1;
             }
-            a = stub.indexOf(' ');
-            y += a + 1;
+            y += s.substring(y + 1).indexOf(" ") + 1;
+            if (s.substring(y + 1).indexOf(" ") < 0) {
+                break;
+            }
         }
-        
-        while(s.contains(";;")) {
+
+        while (s.contains(";;")) {
             s = Strings.replaceAll(s, ";;", ";");
         }
 
@@ -374,17 +416,24 @@ public class GordianScope implements Scope {
         this.container = container;
         this.methods = new GordianMethods(container.methods);
         this.variables = new GordianVariables(container.variables);
+
+        variables.put("container", container);
+    }
+
+    public void inheritFrom(GordianScope scope) {
+        scope.methods.sendTo(methods);
+        scope.variables.sendTo(variables);
     }
 
     public Scope container() {
         return container;
     }
 
-    public Methods methods() {
+    public GordianMethods methods() {
         return methods;
     }
 
-    public Variables variables() {
+    public GordianVariables variables() {
         return variables;
     }
 
@@ -455,6 +504,7 @@ public class GordianScope implements Scope {
                 throw new NullPointerException(s.substring(0, s.length() - 2) + " was not a variable name.");
             }
         }
+
         // shorthand declarations
         Iterator i = operations.iterator();
         while (i.hasNext()) {
@@ -465,10 +515,23 @@ public class GordianScope implements Scope {
                         + s.substring(0, s.indexOf(x)) + o.getChar() + s.substring(s.indexOf(x) + 2);
             }
         }
+
         // declaration
         if (Strings.containsThatIsnt(s, "=", "==") && isName(s.substring(0, Strings.indexThatIsnt(s, "=", "==")))) {
             return variables().set(s.substring(0, Strings.indexThatIsnt(s, "=", "==")),
                     toObject(s.substring(Strings.indexThatIsnt(s, "=", "==") + 1)));
+        }
+
+        // object access declaration
+        if (Strings.containsThatIsnt(s, "=", "==") && Strings.contains(s.substring(0, s.indexOf("=")), ".")) {
+            Object call;
+            String a = s.substring(0, Strings.indexThatIsnt(s, "=", "=="));
+            String before = a.substring(0, a.lastIndexOf('.'));
+            String after = a.substring(a.lastIndexOf('.') + 1);
+
+            call = toObject(before);
+
+            return call.variables().set(after, toObject(s.substring(Strings.indexThatIsnt(s, "=", "==") + 1)));
         }
 
         // parentheses
@@ -486,33 +549,20 @@ public class GordianScope implements Scope {
         }
 
         // method
-        if (s.indexOf("(") > 0 && s.lastIndexOf(')') == s.length() - 1 && isName(s.substring(0, s.indexOf("(")))) {
-            int c = 0;
-            boolean method = false;
-            for (int x = s.indexOf("("); x < s.length(); x++) {
-                if (s.charAt(x) == '(') {
-                    c++;
-                } else if (s.charAt(x) == ')') {
-                    c--;
-                }
-                if (c == 0) {
-                    method = (x == s.length() - 1);
-                    break;
+        if (isMethod(s)) {
+            Method[] m = methods().getAll(s.substring(0, s.indexOf("(")));
+            Arguments a = new Arguments(getArgs(betweenMatch(s, '(', ')')));
+            for (int x = 0; x < m.length; x++) {
+                if (m[x].signature().matches(a.getSignature())) {
+                    return m[x].run(a);
                 }
             }
-            if (method) {
-                try {
-                    Method m = methods().get(s.substring(0, s.indexOf("(")));
-                    Arguments a = new Arguments(getArgs(betweenMatch(s, '(', ')')));
-                    if (m.signature().matches(a.getSignature())) {
-                        return m.run(a);
-                    } else {
-                        throw new RuntimeException("Method " + m + " did not receive the correct type / number or arguments");
-                    }
-                } catch (InternalNotFoundException ex) {
-                    throw new RuntimeException("Could not run method \"" + s.substring(0, s.indexOf("(")) + "\"");
-                }
-            }
+            throw new RuntimeException("Appropriate method could not be found - " + s.substring(0, s.indexOf("(")));
+        }
+
+        // lists
+        if (s.startsWith("[") && s.endsWith("]") && betweenMatch(s, '[', ']').equals(s)) {
+            return new GordianList(getArgs(s.substring(1, s.length() - 1)));
         }
 
         // calculations
@@ -545,18 +595,28 @@ public class GordianScope implements Scope {
         }
 
         // constructor
-        if (s.startsWith("new ")) {
-            try {
-                Class c = (GordianClass) variables().get(s.substring(4, s.indexOf("(")));
-                Arguments a = new Arguments(getArgs(s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"))));
-                Signature[] signatures = c.contructors();
-                for (int x = 0; x < signatures.length; x++) {
-                    if (signatures[x].matches(a.getSignature())) {
-                        return c.contruct(a);
+        if (s.startsWith("new ") && Strings.contains(s, '(') && s.endsWith(")")) {
+            int track = 0;
+            for (int x = s.indexOf('('); x < s.length(); x++) {
+                if (s.charAt(x) == '(') {
+                    track++;
+                } else if (s.charAt(x) == ')') {
+                    track--;
+                }
+                if (track == 0) {
+                    if (x == s.length() - 1) {
+                        // is a lone constructor
+                        try {
+                            Class c = (Class) variables().get(s.substring(4, s.indexOf("(")));
+                            Arguments a = new Arguments(getArgs(s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"))));
+                            return c.contruct(a);
+                        } catch (InternalNotFoundException ex) {
+                            throw new RuntimeException("Could not find class \"" + s.substring(4, s.indexOf("(")) + "\"");
+                        }
+                    } else {
+                        break;
                     }
                 }
-            } catch (InternalNotFoundException ex) {
-                throw new RuntimeException("Could not find class \"" + s.substring(4, s.indexOf("(")) + "\"");
             }
         }
 
@@ -613,24 +673,35 @@ public class GordianScope implements Scope {
             Object call = toObject(s.substring(0, s.lastIndexOf('.')));
 
             String r = s.substring(s.lastIndexOf('.') + 1);
-            if (isMethod(r.substring(r.lastIndexOf('.') + 1))) {
-                try {
-                    return call.getMethod(r.substring(0, r.indexOf("("))).run(new Arguments(getArgs(betweenMatch(s, '(', ')'))));
-                } catch (InternalNotFoundException ex) {
-                    throw new RuntimeException("Could not find context \"" + r.substring(0, r.indexOf("(")) + "\"");
+            if (isMethod(r)) {
+                Method[] m = call.methods().getAll(r.substring(0, r.indexOf("(")));
+                Arguments a = new Arguments(getArgs(betweenMatch(r, '(', ')')));
+                for (int x = 0; x < m.length; x++) {
+                    if (m[x].signature().matches(a.getSignature())) {
+                        return m[x].run(a);
+                    }
                 }
+                throw new RuntimeException("Appropriate method could not be found - " + r);
             }
 
-            if (call != null) {
+            if (call != null && isName(r)) {
                 try {
-                    return call.getVariable(r);
+                    return call.variables().get(r);
                 } catch (InternalNotFoundException ex) {
-                    throw new RuntimeException(r + " could not found in context " + call);
+                    throw new RuntimeException(r + " could not be found in context " 
+                            + s.substring(0, s.lastIndexOf('.')) + " [" + call + "]");
                 }
             }
         }
 
-        throw new NullPointerException(s + " was not a value");
+        // list access
+        if (s.lastIndexOf('[') > 0 && s.endsWith("]")) {
+            GordianList list = (GordianList) toObject(s.substring(0, s.lastIndexOf('[')));
+            GordianNumber index = (GordianNumber) toObject(s.substring(s.lastIndexOf('[') + 1, s.length() - 1));
+            return list.get(index.getInt());
+        }
+
+        throw new NullPointerException(s + " was not a value or instruction.");
     }
 
     public void runBlock(String b) {
@@ -647,14 +718,40 @@ public class GordianScope implements Scope {
                 GordianTry.run(this, b);
             } else if (b.startsWith("while(")) {
                 GordianWhile.run(this, b);
-            } else if (b.startsWith("def") && isName(b.substring(3, b.indexOf('('))))  {
+            } else if (b.startsWith("def") && isName(b.substring(3, b.indexOf('(')))) {
                 methods().put(b.substring(3, b.indexOf('(')), GordianDefinedMethod.get(this, b));
+            } else if (b.startsWith("class")) {
+                // no parent
+                if (isName(b.substring(5, b.indexOf('{')))) {
+                    variables().put(b.substring(5, b.indexOf('{')), GordianDefinedClass.get(this, null,
+                            b.substring(b.indexOf('{') + 1, b.lastIndexOf('}'))));
+                } else if (isName(b.substring(5, b.indexOf('('))) && b.substring(0, b.indexOf('{')).contains(")")) {
+                    variables().put(b.substring(5, b.indexOf('(')), GordianDefinedClass.get(this,
+                            (Class) variables().get(b.substring(b.indexOf('(') + 1, b.indexOf(')'))),
+                            b.substring(b.indexOf('{') + 1, b.lastIndexOf('}'))));
+                } else {
+                    throw new RuntimeException("Illegal class was created.");
+                }
             } else {
                 throw new NullPointerException("Block was not recognized - " + b);
             }
         } catch (Break e) {
             // break was called
+        } catch (InternalNotFoundException ex) {
+            throw new RuntimeException(ex.getMessage());
         }
+    }
+
+    public boolean equals(Object object) {
+        return object == this;
+    }
+
+    public Class parentClass() {
+        return null;
+    }
+
+    public Object parent() {
+        return container;
     }
 
     private static interface Operator {

@@ -27,6 +27,9 @@ public final class Arguments {
 
         Class[] types = new Class[args.length];
         for (int x = 0; x < types.length; x++) {
+            if (args[x] == null) {
+                throw new NullPointerException("Null argument given! - " + args[x] + " index " + x + " in " + args.length);
+            }
             types[x] = args[x].parentClass();
         }
 

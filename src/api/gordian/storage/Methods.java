@@ -19,6 +19,8 @@ public interface Methods {
      */
     public Method get(String name) throws InternalNotFoundException;
 
+    public Method[] getAll(String name);
+
     /**
      * Stores the method as the name. This method does not necessarily overwrite
      * any existing methods.

@@ -3,6 +3,7 @@ package org.gordian.storage;
 import api.gordian.storage.InternalNotFoundException;
 import edu.first.util.list.ArrayList;
 import edu.first.util.list.Iterator;
+import edu.first.util.list.List;
 
 /**
  *
@@ -16,9 +17,14 @@ final class GordianStorage {
     public GordianStorage() {
     }
 
-    public GordianStorage(GordianStorage s) {
-        list.addAll(s.list);
-        reserved.addAll(s.reserved);
+    public GordianStorage(GordianStorage storage) {
+        list.addAll(storage.list);
+        reserved.addAll(storage.reserved);
+    }
+    
+    public void sendTo(GordianStorage storage) {
+        storage.list.addAll(list);
+        storage.reserved.addAll(reserved);
     }
 
     protected void reserve(String name, Object value) {
@@ -36,6 +42,18 @@ final class GordianStorage {
             }
         }
         throw new InternalNotFoundException(name);
+    }
+
+    public Object[] getAll(String name) {
+        Iterator i = list.iterator();
+        List l = new ArrayList();
+        while (i.hasNext()) {
+            Node n = (Node) i.next();
+            if (n.name.equals(name)) {
+                l.add(n.object);
+            }
+        }
+        return l.toArray();
     }
 
     public Object put(String name, Object object) {
@@ -59,7 +77,7 @@ final class GordianStorage {
         for (int x = 0; x < list.size(); x++) {
             if (((Node) list.get(x)).name.equals(name)) {
                 // operate on node to affect container scopes
-                ((Node)list.get(x)).object = object;
+                ((Node) list.get(x)).object = object;
                 return object;
             }
         }

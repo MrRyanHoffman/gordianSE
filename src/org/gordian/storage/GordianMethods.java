@@ -170,8 +170,19 @@ public class GordianMethods implements Methods {
         storage = new GordianStorage(methods.storage);
     }
 
+    public void sendTo(GordianMethods methods) {
+        storage.sendTo(methods.storage);
+    }
+    
     public Method get(String name) throws InternalNotFoundException {
         return (Method) storage.get(name);
+    }
+
+    public Method[] getAll(String name) {
+        java.lang.Object[] o = storage.getAll(name);
+        Method[] a = new Method[o.length];
+        System.arraycopy(o, 0, a, 0, o.length);
+        return a;
     }
 
     public void put(String name, Method method) {

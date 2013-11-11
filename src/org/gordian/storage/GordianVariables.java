@@ -37,6 +37,10 @@ public class GordianVariables implements Variables {
     public GordianVariables(GordianVariables variables) {
         storage = new GordianStorage(variables.storage);
     }
+    
+    public void sendTo(GordianVariables variables) {
+        storage.sendTo(variables.storage);
+    }
 
     public Object get(String name) throws InternalNotFoundException {
         return (Object) storage.get(name);

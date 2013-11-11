@@ -7,7 +7,7 @@ import api.gordian.storage.Variables;
  *
  * @author Joel Gallant <joelgallant236@gmail.com>
  */
-public interface Scope {
+public interface Scope extends Object {
     
     public Scope container();
 
