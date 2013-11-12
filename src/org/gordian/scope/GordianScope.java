@@ -111,6 +111,10 @@ public class GordianScope implements Scope {
     }
 
     public static String[] findConstructors(String s) {
+        if (!isProper(s)) {
+            s = clean(s);
+        }
+        
         List l = new ArrayList();
         String next = findNextConstructor(s);
         while (next != null) {
