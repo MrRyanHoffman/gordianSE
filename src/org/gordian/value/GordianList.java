@@ -21,7 +21,7 @@ public class GordianList extends GordianObject {
     public GordianList(Object[] values) {
         list = Collections.asList(values);
     }
-    
+
     public Object get(int index) {
         return (Object) list.get(index);
     }
@@ -40,6 +40,10 @@ public class GordianList extends GordianObject {
 
     public Object parent() {
         return null;
+    }
+
+    public String toString() {
+        return list.toString();
     }
 
     private static final class DummyParent extends GordianClass {

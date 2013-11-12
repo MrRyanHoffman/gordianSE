@@ -36,9 +36,6 @@ public class GordianDefinedClass extends GordianScope implements Class {
         final GordianDefinedInstance instance = new GordianDefinedInstance(this);
         superCalled = false;
 
-        // remember - rest of the instance is created *before* constructor is called
-        instance.run(internals);
-
         if (parent != null) {
             // give access to super
             Signature[] parentConstructors = parent.contructors();
@@ -54,6 +51,8 @@ public class GordianDefinedClass extends GordianScope implements Class {
                 });
             }
         }
+
+        instance.run(internals);
 
         if (constructors.length == 0) {
             instance.methods().put("construct", new GordianMethod(new Signature()) {
@@ -95,6 +94,7 @@ public class GordianDefinedClass extends GordianScope implements Class {
                 // lazy people get free super construction after constructor
                 instance.methods().get("super").run(new Arguments());
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new RuntimeException("Super constructor was not called");
             }
         }
@@ -114,7 +114,8 @@ public class GordianDefinedClass extends GordianScope implements Class {
         }
         Signature[] s = new Signature[constructors.length];
         for (int x = 0; x < s.length; x++) {
-            String[] args = getPureArgs(constructors[x]);
+            String con = constructors[x].substring(0, constructors[x].indexOf(";"));
+            String[] args = getPureArgs(con.substring(con.indexOf('(') + 1, con.lastIndexOf(')')));
             Class[] c = new Class[args.length];
             for (int i = 0; i < c.length; i++) {
                 c[i] = GordianClass.ALL_CLASSES;

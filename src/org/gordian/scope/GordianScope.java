@@ -6,16 +6,11 @@ import api.gordian.Object;
 import api.gordian.Scope;
 import api.gordian.methods.Method;
 import api.gordian.storage.InternalNotFoundException;
-import api.gordian.storage.Methods;
-import api.gordian.storage.Variables;
 import edu.first.util.Strings;
 import edu.first.util.list.ArrayList;
 import edu.first.util.list.Collections;
 import edu.first.util.list.Iterator;
 import edu.first.util.list.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.gordian.GordianClass;
 import org.gordian.storage.GordianMethods;
 import org.gordian.storage.GordianVariables;
 import org.gordian.value.GordianBoolean;
@@ -29,7 +24,7 @@ import org.gordian.value.GordianString;
  */
 public class GordianScope implements Scope {
 
-    public static final String[] keywords = {"new"};
+    public static final String[] keywords = {"new", "del"};
     public static final List operations = Collections.asList(new Operator[]{
         new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
     });
@@ -114,7 +109,7 @@ public class GordianScope implements Scope {
         if (!isProper(s)) {
             s = clean(s);
         }
-        
+
         List l = new ArrayList();
         String next = findNextConstructor(s);
         while (next != null) {
@@ -160,7 +155,12 @@ public class GordianScope implements Scope {
                     i--;
                 }
                 buffer.append(e);
-                if (i == 0 && buffer.indexOf("{") >= 0) {
+                if (Strings.contains(s.substring(x), "{")
+                        && (s.substring(x).startsWith("}catch")
+                        || s.substring(x).startsWith("}else"))) {
+                    buffer.append(s.substring(x + 1, x + s.substring(x).indexOf('{')));
+                    x = x + s.substring(x).indexOf('{') - 1;
+                } else if (i == 0 && buffer.indexOf("{") >= 0) {
                     // Add everything until matching bracket shows up.
                     return buffer.toString();
                 }
@@ -345,12 +345,12 @@ public class GordianScope implements Scope {
     }
 
     protected String[] getPureArgs(String s) {
-        if (!Strings.contains(s, '(')) {
+        if (!Strings.contains(s, '(') && !Strings.contains(s, ')') && !Strings.contains(s, '[') && !Strings.contains(s, ']')) {
             return Strings.split(s, ',');
         } else {
             List l = new ArrayList();
             boolean inQuotes = false;
-            int p1 = 0;
+            int p1 = 0, p2 = 0;
             int last = 0;
             char[] d = s.toCharArray();
             for (int x = 0; x < d.length; x++) {
@@ -358,8 +358,12 @@ public class GordianScope implements Scope {
                     p1++;
                 } else if (d[x] == ')') {
                     p1--;
+                } else if (d[x] == '[') {
+                    p2++;
+                } else if (d[x] == ']') {
+                    p2--;
                 }
-                if (d[x] == ',' && !inQuotes && p1 == 0 && !Strings.isEmpty(s.substring(last, x))) {
+                if (d[x] == ',' && !inQuotes && p1 == 0 && p2 == 0 && !Strings.isEmpty(s.substring(last, x))) {
                     l.add(s.substring(last, x));
                     last = x + 1;
                 }
@@ -376,34 +380,7 @@ public class GordianScope implements Scope {
     }
 
     protected Object[] getArgs(String s) {
-        if (!Strings.contains(s, '(')) {
-            return toObjects(Strings.split(s, ','));
-        } else {
-            List l = new ArrayList();
-            boolean inQuotes = false;
-            int p1 = 0;
-            int last = 0;
-            char[] d = s.toCharArray();
-            for (int x = 0; x < d.length; x++) {
-                if (d[x] == '(') {
-                    p1++;
-                } else if (d[x] == ')') {
-                    p1--;
-                }
-                if (d[x] == ',' && !inQuotes && p1 == 0 && !Strings.isEmpty(s.substring(last, x))) {
-                    l.add(s.substring(last, x));
-                    last = x + 1;
-                }
-                if (x == d.length - 1 && !Strings.isEmpty(s.substring(last))) {
-                    l.add(s.substring(last));
-                }
-            }
-            Object[] args = new Object[l.size()];
-            for (int x = 0; x < args.length; x++) {
-                args[x] = toObject((String) l.get(x));
-            }
-            return args;
-        }
+        return toObjects(getPureArgs(s));
     }
 
     private final GordianMethods methods;
@@ -479,7 +456,8 @@ public class GordianScope implements Scope {
         } catch (NumberFormatException e) {
         }
         // string literals
-        if (s.startsWith("\'!") && s.endsWith("!\'")) {
+        if (s.startsWith("\'!") && s.endsWith("!\'")
+                && s.substring(s.indexOf('\'') + 1, 1 + s.substring(1).indexOf('\'')).equals(s.substring(1, s.length() - 1))) {
             return GordianString.evaluate(s.substring(2, s.length() - 2));
         }
         // variables
@@ -490,23 +468,41 @@ public class GordianScope implements Scope {
                 // should never happen
             }
         }
-
-        // adjustments
-        if (s.endsWith("++") && variables().contains(s.substring(0, s.length() - 2))) {
+        // delete
+        if (s.startsWith("del ") && isName(s.substring(4))) {
             try {
-                s = s.substring(0, s.length() - 2) + "="
-                        + (((GordianNumber) variables().get(s.substring(0, s.length() - 2))).getValue() + 1);
+                Object o = variables().get(s.substring(4));
+                variables().remove(s.substring(4));
+                return o;
             } catch (InternalNotFoundException ex) {
-                throw new NullPointerException(s.substring(0, s.length() - 2) + " was not a variable name.");
+                throw new NullPointerException(s.substring(4) + " could not be removed");
             }
         }
-        if (s.endsWith("--") && variables().contains(s.substring(0, s.length() - 2))) {
+        // object access deletion
+        if (s.startsWith("del ")) {
+            Object call;
+            String a = s.substring(4);
+            String before = a.substring(0, a.lastIndexOf('.'));
+            String after = a.substring(a.lastIndexOf('.') + 1);
+
+            call = toObject(before);
             try {
-                s = s.substring(0, s.length() - 2) + "="
-                        + (((GordianNumber) variables().get(s.substring(0, s.length() - 2))).getValue() - 1);
+                Object o = call.variables().get(after);
+                call.variables().remove(after);
+                return o;
             } catch (InternalNotFoundException ex) {
-                throw new NullPointerException(s.substring(0, s.length() - 2) + " was not a variable name.");
+                throw new NullPointerException(after + " could not be removed");
             }
+        }
+
+        // adjustments
+        if (s.endsWith("++")) {
+            s = s.substring(0, s.length() - 2) + "="
+                    + (((GordianNumber) toObject(s.substring(0, s.length() - 2))).getValue() + 1);
+        }
+        if (s.endsWith("--")) {
+            s = s.substring(0, s.length() - 2) + "="
+                    + (((GordianNumber) toObject(s.substring(0, s.length() - 2))).getValue() - 1);
         }
 
         // shorthand declarations
@@ -565,7 +561,7 @@ public class GordianScope implements Scope {
         }
 
         // lists
-        if (s.startsWith("[") && s.endsWith("]") && betweenMatch(s, '[', ']').equals(s)) {
+        if (s.startsWith("[") && s.endsWith("]") && betweenMatch(s, '[', ']').equals(s.substring(1, s.length() - 1))) {
             return new GordianList(getArgs(s.substring(1, s.length() - 1)));
         }
 
@@ -692,7 +688,7 @@ public class GordianScope implements Scope {
                 try {
                     return call.variables().get(r);
                 } catch (InternalNotFoundException ex) {
-                    throw new RuntimeException(r + " could not be found in context " 
+                    throw new RuntimeException(r + " could not be found in context "
                             + s.substring(0, s.lastIndexOf('.')) + " [" + call + "]");
                 }
             }

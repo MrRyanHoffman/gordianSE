@@ -56,19 +56,6 @@ public class GordianMethods implements Methods {
                         throw new Break();
                     }
                 });
-        storage.reserve("delete", new GordianMethod(
-                new Signature(
-                        new Class[]{GordianString.CLASS}
-                )) {
-                    public Object run(Object[] args) {
-                        try {
-                            remove(((GordianString) args[0]).getValue());
-                        } catch (InternalNotFoundException ex) {
-                            ex.printStackTrace();
-                        }
-                        return null;
-                    }
-                });
         storage.reserve("eval", new GordianMethod(
                 new Signature(
                         new Class[]{GordianString.CLASS}
