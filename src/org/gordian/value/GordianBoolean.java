@@ -1,23 +1,20 @@
 package org.gordian.value;
 
-import api.gordian.Arguments;
 import api.gordian.Class;
 import api.gordian.Object;
-import api.gordian.Signature;
-import org.gordian.GordianClass;
-import org.gordian.GordianObject;
+import org.gordian.GordianPrimitive;
 
 /**
  *
  * @author Joel Gallant <joelgallant236@gmail.com>
  */
-public class GordianBoolean extends GordianObject {
+public class GordianBoolean extends GordianPrimitive {
 
-    public static final Class CLASS = DummyParent.INSTANCE;
+    public static final Class CLASS = Parent.CLASS;
     public static final GordianBoolean TRUE = new GordianBoolean(true);
     public static final GordianBoolean FALSE = new GordianBoolean(false);
     private final boolean val;
-    
+
     public GordianBoolean(boolean val) {
         this.val = val;
     }
@@ -35,7 +32,7 @@ public class GordianBoolean extends GordianObject {
     }
 
     public Class parentClass() {
-        return DummyParent.INSTANCE;
+        return CLASS;
     }
 
     public Object parent() {
@@ -46,21 +43,8 @@ public class GordianBoolean extends GordianObject {
         return String.valueOf(val);
     }
 
-    private static final class DummyParent extends GordianClass {
+    private static final class Parent extends PrimitiveClass {
 
-        private static final DummyParent INSTANCE = new DummyParent();
-
-        public DummyParent() {
-            super(null);
-        }
-
-        public Object contruct(Arguments arguments) {
-            return null;
-        }
-
-        public Signature[] contructors() {
-            return null;
-        }
-
+        private static final Class CLASS = new Parent();
     }
 }

@@ -7,16 +7,16 @@ import api.gordian.Signature;
 import edu.first.util.list.Collections;
 import edu.first.util.list.List;
 import org.gordian.GordianClass;
-import org.gordian.GordianObject;
+import org.gordian.GordianPrimitive;
 import org.gordian.method.GordianMethod;
 
 /**
  *
  * @author Joel Gallant <joelgallant236@gmail.com>
  */
-public class GordianList extends GordianObject {
+public class GordianList extends GordianPrimitive {
 
-    public static final Class CLASS = DummyParent.INSTANCE;
+    public static final Class CLASS = Parent.CLASS;
     private final List list;
 
     {
@@ -190,21 +190,9 @@ public class GordianList extends GordianObject {
         return list.toString();
     }
 
-    private static final class DummyParent extends GordianClass {
 
-        private static final DummyParent INSTANCE = new DummyParent();
+    private static final class Parent extends PrimitiveClass {
 
-        public DummyParent() {
-            super(null);
-        }
-
-        public Object contruct(Arguments arguments) {
-            return null;
-        }
-
-        public Signature[] contructors() {
-            return null;
-        }
-
+        private static final Class CLASS = new Parent();
     }
 }

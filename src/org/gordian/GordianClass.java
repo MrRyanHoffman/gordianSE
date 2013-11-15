@@ -9,7 +9,7 @@ import api.gordian.Signature;
  *
  * @author Joel Gallant <joelgallant236@gmail.com>
  */
-public abstract class GordianClass extends GordianObject implements Class {
+public abstract class GordianClass extends GordianPrimitive implements Class {
 
     public static final GordianClass ALL_CLASSES = new GordianClass(null) {
 
