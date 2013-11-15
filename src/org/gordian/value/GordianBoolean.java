@@ -6,7 +6,6 @@ import api.gordian.Object;
 import api.gordian.Signature;
 import org.gordian.GordianClass;
 import org.gordian.GordianObject;
-import org.gordian.method.GordianMethod;
 
 /**
  *
