@@ -12,7 +12,7 @@ Gordian is a dynamically typed interpreted scripting language with variables, me
 
 ### Known Bugs
 
-There are potential dangers when using keywords anywhere in a Gordian program. This especially applies to things like block headers (if, thread, etc.) Gordian has no real way to prevent this kind of parsing mistake. It's always a good idea to use words and symbols that are not used by Gordian. This rarely if ever applies to strings (strings are sterilized), it mostly applies to variable names (classes, functions and scopes too).
+There are potential dangers when using keywords as variable names, method names and class names. Most of the time, you should be safe - but be weary about using language keywords where they might be misinterpreted.
 
 # Values
 
@@ -22,7 +22,7 @@ Numbers are a combination of double (64 bit) and int (32 bit). If a value is `x 
 
 *Note: putting `.0` at the end of a number literal will not make it a double. This functionality is not built in to the language.* There is no need to build it in, because arithmetic will always use the most precise method.
 
-Booleans are simple, you can use `true` or `false`, with any or all letters capitalized.
+Booleans are simple, you can use `true`, `True`, `false` or `False`.
 
 Strings are indicated with single or double quotation marks at the very ends of the string. Escape characters are as follows:
 
@@ -34,11 +34,11 @@ Strings are indicated with single or double quotation marks at the very ends of 
 
 `\n` = newline character
 
-Lists are declared using `{` and `}` around them, with values separated using commas.
+Lists are declared using `[` and `]` around them, with values separated using commas.
 
-Classes are defined by their name. Classes are actually values, but can be constructed into operational instances using `[class]` notation.
+Classes are defined by their name. Classes are actually objects, but can be constructed into operational instances using `new class(args)` notation.
 
-Null is accessed using the variable `null`.
+Null is accessed using `null`.
 
 # Adjustments
 
@@ -46,7 +46,7 @@ Booleans can also be adjusted using the basic operator.
 
 `!` = Reverse a boolean (true -> false)
 
-Numbers can be reversed using `neg(x)` or `x.neg()`. This is preferred to using `-` before numbers (parsing is not predictable).
+Numbers can be reversed using `-`, `neg(x)` or `x.neg()`.
 
 To cast values to certain types, use the methods:
 
@@ -248,12 +248,20 @@ To access native functions of a parent class, use the `parent` keyword. The func
 
 **Lists**
 
-- `get(x)` - Get value at the `x` index
 - `add(x)` - Add `x` to the end of the list (appends)
+- `add(i, x)` - Add `x` to the `i` index
 - `addAll(x)` - Adds all values from another list
-- `set(i, x)` - Sets the value at `i` index to `x`
+- `addAll(i, x)` - Adds all values from another list to `i` index
 - `clear()` - Clears all elements from the list
-- `remove(x)` - Removes the element `x` from the list
-- `removeat(x)` - Removes the element at `x` index
-- `size()` - Get the size of the list
 - `contains(x)` - If the list contains `x`
+- `containsAll(x)` - If the list contains all values in list `x`
+- `get(x)` - Get value at the `x` index
+- `indexOf(x)` - Get the index of object `x`
+- `isEmpty()` - If list is completely empty
+- `lastIndexOf(x)` - Get the last index of object `x`
+- `remove(x)` - Removes the element at index `x` from the list
+- `removeAll(x)` - Removes all elements in list `x` from the list
+- `retainAll(x)` - Retains all elements in list `x` in the list
+- `set(i, x)` - Sets the value at `i` index to `x`
+- `size()` - Get the size of the list
+- `sublist(s, e)` - A new list with elements from `s` to `e`

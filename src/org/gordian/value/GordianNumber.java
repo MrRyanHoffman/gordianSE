@@ -2,7 +2,9 @@ package org.gordian.value;
 
 import api.gordian.Class;
 import api.gordian.Object;
+import api.gordian.Signature;
 import org.gordian.GordianPrimitive;
+import org.gordian.method.GordianMethod;
 
 /**
  *
@@ -12,6 +14,29 @@ public class GordianNumber extends GordianPrimitive {
 
     public static final Class CLASS = Parent.CLASS;
     private final double val;
+
+    {
+        methods().put("neg", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianNumber(-val);
+                    }
+                });
+        methods().put("pow", new GordianMethod(
+                new Signature(
+                        new Class[]{GordianNumber.CLASS}
+                )) {
+                    public Object run(Object[] args) {
+                        return new GordianNumber(Math.pow(val, ((GordianNumber) args[0]).getValue()));
+                    }
+                });
+        methods().put("sqrt", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianNumber(Math.sqrt(val));
+                    }
+                });
+    }
 
     public GordianNumber(double val) {
         this.val = val;
@@ -48,7 +73,6 @@ public class GordianNumber extends GordianPrimitive {
     public String toString() {
         return String.valueOf(val);
     }
-
 
     private static final class Parent extends PrimitiveClass {
 

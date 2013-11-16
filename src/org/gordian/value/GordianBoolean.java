@@ -2,7 +2,9 @@ package org.gordian.value;
 
 import api.gordian.Class;
 import api.gordian.Object;
+import api.gordian.Signature;
 import org.gordian.GordianPrimitive;
+import org.gordian.method.GordianMethod;
 
 /**
  *
@@ -14,6 +16,15 @@ public class GordianBoolean extends GordianPrimitive {
     public static final GordianBoolean TRUE = new GordianBoolean(true);
     public static final GordianBoolean FALSE = new GordianBoolean(false);
     private final boolean val;
+
+    {
+        methods().put("reverse", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianBoolean(!val);
+                    }
+                });
+    }
 
     public GordianBoolean(boolean val) {
         this.val = val;

@@ -1,6 +1,5 @@
 package org.gordian.value;
 
-import api.gordian.Arguments;
 import api.gordian.Class;
 import api.gordian.Object;
 import api.gordian.Signature;
@@ -56,12 +55,13 @@ public class GordianList extends GordianPrimitive {
                         return null;
                     }
                 });
-        methods().put("clear", new GordianMethod(new Signature()) {
-            public Object run(Object[] args) {
-                list.clear();
-                return null;
-            }
-        });
+        methods().put("clear", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        list.clear();
+                        return null;
+                    }
+                });
         methods().put("contains", new GordianMethod(
                 new Signature(
                         new Class[]{GordianClass.ALL_CLASSES}
@@ -94,11 +94,12 @@ public class GordianList extends GordianPrimitive {
                         return new GordianNumber(list.indexOf(args[0]));
                     }
                 });
-        methods().put("isEmpty", new GordianMethod(new Signature()) {
-            public Object run(Object[] args) {
-                return new GordianBoolean(list.isEmpty());
-            }
-        });
+        methods().put("isEmpty", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianBoolean(list.isEmpty());
+                    }
+                });
         methods().put("lastIndexOf", new GordianMethod(
                 new Signature(
                         new Class[]{GordianClass.ALL_CLASSES}
@@ -142,11 +143,12 @@ public class GordianList extends GordianPrimitive {
                         return null;
                     }
                 });
-        methods().put("size", new GordianMethod(new Signature()) {
-            public Object run(Object[] args) {
-                return new GordianNumber(list.size());
-            }
-        });
+        methods().put("size", new GordianMethod(
+                new Signature()) {
+                    public Object run(Object[] args) {
+                        return new GordianNumber(list.size());
+                    }
+                });
         methods().put("sublist", new GordianMethod(
                 new Signature(new Class[]{GordianNumber.CLASS, GordianNumber.CLASS})
         ) {
@@ -154,7 +156,7 @@ public class GordianList extends GordianPrimitive {
                 int start = ((GordianNumber) args[0]).getInt();
                 int end = ((GordianNumber) args[1]).getInt();
                 Object[] array = new Object[end - start];
-                for(int x = 0; x < array.length; x++) {
+                for (int x = 0; x < array.length; x++) {
                     array[x] = (Object) list.get(x + start);
                 }
                 return new GordianList(array);
@@ -189,7 +191,6 @@ public class GordianList extends GordianPrimitive {
     public String toString() {
         return list.toString();
     }
-
 
     private static final class Parent extends PrimitiveClass {
 
