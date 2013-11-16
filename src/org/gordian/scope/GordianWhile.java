@@ -10,7 +10,7 @@ public class GordianWhile extends GordianScope {
 
     public static void run(GordianScope scope, String s) {
         new GordianWhile(scope).run(s.substring(6, s.substring(0, s.indexOf("{")).lastIndexOf(')')),
-                s.substring(s.indexOf(";") + 1, s.lastIndexOf("}")));
+                s.substring(s.indexOf(";") + 1, s.lastIndexOf('}')));
     }
 
     public GordianWhile(GordianScope scope) {

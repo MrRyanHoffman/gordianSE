@@ -76,7 +76,7 @@ public class GordianMethods implements Methods {
                         new Class[]{GordianClass.ALL_CLASSES}
                 )) {
                     public Object run(Object[] args) {
-                        return new GordianBoolean(Boolean.parseBoolean(args[0].toString()));
+                        return new GordianBoolean(args[0].toString().equalsIgnoreCase("true"));
                     }
                 });
         storage.reserve("str", new GordianMethod(

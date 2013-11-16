@@ -7,6 +7,8 @@ import api.gordian.Scope;
 import api.gordian.methods.Method;
 import api.gordian.methods.ValueReturned;
 import api.gordian.storage.InternalNotFoundException;
+import api.gordian.storage.Methods;
+import api.gordian.storage.Variables;
 import edu.first.util.Strings;
 import edu.first.util.list.ArrayList;
 import edu.first.util.list.Collections;
@@ -43,7 +45,7 @@ public class GordianScope implements Scope {
         // Pre-block cannot contain separete instruction
         // It is also only a real block if all is contained within a pair of {}s.
         while (s.endsWith(";")) {
-            s = s.substring(0, s.lastIndexOf(";"));
+            s = s.substring(0, s.lastIndexOf(';'));
         }
         if (!(Strings.contains(s, '{') && s.endsWith("}"))
                 || Strings.contains(s.substring(0, s.indexOf('{')), ';')) {
@@ -163,7 +165,7 @@ public class GordianScope implements Scope {
                         || s.substring(x).startsWith("}else"))) {
                     buffer.append(s.substring(x + 1, x + s.substring(x).indexOf('{')));
                     x = x + s.substring(x).indexOf('{') - 1;
-                } else if (i == 0 && buffer.indexOf("{") >= 0) {
+                } else if (i == 0 && buffer.toString().indexOf("{") >= 0) {
                     // Add everything until matching bracket shows up.
                     return buffer.toString();
                 }
@@ -296,7 +298,7 @@ public class GordianScope implements Scope {
             }
         }
 
-        while (s.contains(";;")) {
+        while (Strings.contains(s, ";;")) {
             s = Strings.replaceAll(s, ";;", ";");
         }
 
@@ -418,11 +420,11 @@ public class GordianScope implements Scope {
         return container;
     }
 
-    public GordianMethods methods() {
+    public Methods methods() {
         return methods;
     }
 
-    public GordianVariables variables() {
+    public Variables variables() {
         return variables;
     }
 
@@ -748,7 +750,7 @@ public class GordianScope implements Scope {
                 if (isName(b.substring(5, b.indexOf('{')))) {
                     variables().put(b.substring(5, b.indexOf('{')), GordianDefinedClass.get(this, null,
                             b.substring(b.indexOf('{') + 1, b.lastIndexOf('}'))));
-                } else if (isName(b.substring(5, b.indexOf('('))) && b.substring(0, b.indexOf('{')).contains(")")) {
+                } else if (isName(b.substring(5, b.indexOf('('))) && Strings.contains(b.substring(0, b.indexOf('{')), ")")) {
                     variables().put(b.substring(5, b.indexOf('(')), GordianDefinedClass.get(this,
                             (Class) variables().get(b.substring(b.indexOf('(') + 1, b.indexOf(')'))),
                             b.substring(b.indexOf('{') + 1, b.lastIndexOf('}'))));

@@ -5,6 +5,8 @@ import org.gordian.storage.GordianVariables;
 import org.gordian.storage.GordianMethods;
 import api.gordian.Object;
 import api.gordian.Signature;
+import api.gordian.storage.Methods;
+import api.gordian.storage.Variables;
 
 /**
  *
@@ -12,14 +14,14 @@ import api.gordian.Signature;
  */
 public abstract class GordianPrimitive implements Object {
 
-    private final GordianMethods methods = new GordianMethods(true);
-    private final GordianVariables variables = new GordianVariables(true);
+    private final Methods methods = new GordianMethods(true);
+    private final Variables variables = new GordianVariables(true);
 
-    public GordianMethods methods() {
+    public Methods methods() {
         return methods;
     }
 
-    public GordianVariables variables() {
+    public Variables variables() {
         return variables;
     }
 

@@ -16,7 +16,7 @@ public class GordianDefinedMethod extends GordianScope implements Method {
 
     public static GordianDefinedMethod get(GordianScope scope, String s) {
         return new GordianDefinedMethod(scope, scope.getPureArgs(s.substring(s.indexOf('(') + 1, s.substring(0, s.indexOf("{")).lastIndexOf(')'))),
-                s.substring(s.indexOf("{") + 1, s.lastIndexOf("}")));
+                s.substring(s.indexOf("{") + 1, s.lastIndexOf('}')));
     }
 
     private final String run;

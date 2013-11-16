@@ -7,7 +7,7 @@ package org.gordian.scope;
 public class GordianThread extends GordianScope {
 
     public static void run(GordianScope scope, String s) {
-        new GordianThread(scope).runThread(s.substring(s.indexOf("{") + 1, s.lastIndexOf("}")));
+        new GordianThread(scope).runThread(s.substring(s.indexOf("{") + 1, s.lastIndexOf('}')));
     }
     
     public GordianThread(GordianScope container) {

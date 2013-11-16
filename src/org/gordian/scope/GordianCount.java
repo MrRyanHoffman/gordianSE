@@ -12,7 +12,7 @@ public class GordianCount extends GordianScope {
         new GordianCount(scope).run(s.substring(6, s.indexOf(",")),
                 s.substring(s.indexOf(",") + 1, s.substring(0, s.indexOf("{")).lastIndexOf(',')),
                 s.substring(s.substring(0, s.indexOf("{")).lastIndexOf(',') + 1, s.substring(0, s.indexOf("{")).lastIndexOf(')')),
-                s.substring(s.indexOf(";") + 1, s.lastIndexOf("}")));
+                s.substring(s.indexOf(";") + 1, s.lastIndexOf('}')));
     }
 
     public GordianCount(GordianScope scope) {

@@ -27,9 +27,9 @@ public class GordianTry extends GordianScope {
         }
         if (catchIndex >= 0) {
             gt.runWithCatch(s.substring(s.indexOf("{") + 1, catchIndex),
-                    s.substring(catchIndex + 7, s.lastIndexOf("}")));
+                    s.substring(catchIndex + 7, s.lastIndexOf('}')));
         } else {
-            gt.runWithoutCatch(s.substring(s.indexOf("{") + 1, s.lastIndexOf("}")));
+            gt.runWithoutCatch(s.substring(s.indexOf("{") + 1, s.lastIndexOf('}')));
         }
     }
 
