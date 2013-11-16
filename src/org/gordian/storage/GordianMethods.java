@@ -89,7 +89,7 @@ public class GordianMethods implements Methods {
                 });
         storage.reserve("concat", new GordianMethod(
                 new Signature(
-                        new Class[]{GordianString.CLASS, GordianString.CLASS}
+                        new Class[]{GordianClass.ALL_CLASSES, GordianClass.ALL_CLASSES}
                 )) {
                     public Object run(Object[] args) {
                         return new GordianString(args[0].toString() + args[1].toString());
