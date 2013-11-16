@@ -69,19 +69,21 @@ public class GordianScope implements Scope {
     }
 
     public static boolean isName(String s) {
-        // Names can only contain letters and numbers.
+        // Names can only contain letters and numbers, one character has to be a letter.
         if (s.length() == 0) {
             return false;
         }
+        boolean containsLetter = false;
         for (int x = 0; x < s.length(); x++) {
-            if (!( // Letters
-                    (Character.isLowerCase(s.charAt(x)) || Character.isUpperCase(s.charAt(x)))
-                    // Numbers
-                    || (s.charAt(x) > 47 && s.charAt(x) < 58))) {
+            if (Character.isLowerCase(s.charAt(x)) || Character.isUpperCase(s.charAt(x))) {
+                // letter
+                containsLetter = true;
+            } else if (!(s.charAt(x) > 47 && s.charAt(x) < 58)) {
+                // not number
                 return false;
             }
         }
-        return true;
+        return containsLetter;
     }
 
     public static boolean isMethod(String s) {
@@ -590,6 +592,8 @@ public class GordianScope implements Scope {
                             ((GordianNumber) toObject(s.substring(s.lastIndexOf(o.getChar()) + 1))).getValue()));
                 } catch (ClassCastException ex) {
                     throw new RuntimeException("Calculation failed - " + s);
+                } catch (NullPointerException e) {
+                    // weren't numbers...
                 }
             }
         }
@@ -699,6 +703,14 @@ public class GordianScope implements Scope {
             GordianList list = (GordianList) toObject(s.substring(0, s.lastIndexOf('[')));
             GordianNumber index = (GordianNumber) toObject(s.substring(s.lastIndexOf('[') + 1, s.length() - 1));
             return list.get(index.getInt());
+        }
+
+        // negative
+        if (s.startsWith("-")) {
+            return new GordianNumber(-((GordianNumber) toObject(s.substring(1))).getValue());
+        }
+        if (s.startsWith("+")) {
+            return new GordianNumber(((GordianNumber) toObject(s.substring(1))).getValue());
         }
 
         throw new NullPointerException(s + " was not a value or instruction.");

@@ -1,6 +1,6 @@
 # The Gordian Specification
 
-Gordian is what could be refered to as a *value-oriented* language. Like an object oriented laguage, Gordian treats everything like a value. It will evaluate every instruction as if it was a value. The only element that is not a value is blocks (if, while, etc.) - which are composed of values.
+Gordian is very close to an object oriented language. It will evaluate every instruction as if it was a value. The only element that is not a value is blocks (if, while, etc.).
 
 So,
 
@@ -16,7 +16,7 @@ There are potential dangers when using keywords anywhere in a Gordian program. T
 
 # Values
 
-Gordian has seven value types: Numbers, Booleans, Strings, Lists, Classes, Instances and Null.
+Gordian has seven object types: Numbers, Booleans, Strings, Lists, Classes, Instances and Null.
 
 Numbers are a combination of double (64 bit) and int (32 bit). If a value is `x % 1 == 0`, it is considered an integer internally. Otherwise, it is a double.
 
