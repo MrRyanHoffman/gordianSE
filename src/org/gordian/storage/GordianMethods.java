@@ -4,7 +4,6 @@ import api.gordian.Class;
 import api.gordian.Object;
 import api.gordian.Signature;
 import api.gordian.methods.Method;
-import api.gordian.methods.ValueReturned;
 import api.gordian.storage.InternalNotFoundException;
 import api.gordian.storage.Methods;
 import java.util.Random;
@@ -41,15 +40,6 @@ public class GordianMethods implements Methods {
                         return new GordianNumber(System.currentTimeMillis());
                     }
                 });
-        storage.reserve("return", new GordianMethod(
-                new Signature(
-                        new Class[]{GordianClass.ALL_CLASSES}
-                )) {
-                    public Object run(Object[] args) {
-                        throw new ValueReturned(args[0]);
-                    }
-                }
-        );
         storage.reserve("break", new GordianMethod(
                 new Signature()) {
                     public Object run(Object[] args) {

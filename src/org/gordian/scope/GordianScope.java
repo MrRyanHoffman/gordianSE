@@ -5,6 +5,7 @@ import api.gordian.Class;
 import api.gordian.Object;
 import api.gordian.Scope;
 import api.gordian.methods.Method;
+import api.gordian.methods.ValueReturned;
 import api.gordian.storage.InternalNotFoundException;
 import edu.first.util.Strings;
 import edu.first.util.list.ArrayList;
@@ -24,7 +25,7 @@ import org.gordian.value.GordianString;
  */
 public class GordianScope implements Scope {
 
-    public static final String[] keywords = {"new", "del"};
+    public static final String[] keywords = {"new", "del", "return"};
     public static final List operations = Collections.asList(new Operator[]{
         new Addition(), new Subtraction(), new Multiplication(), new Division(), new Modulus()
     });
@@ -462,13 +463,9 @@ public class GordianScope implements Scope {
                 && s.substring(s.indexOf('\'') + 1, 1 + s.substring(1).indexOf('\'')).equals(s.substring(1, s.length() - 1))) {
             return GordianString.evaluate(s.substring(2, s.length() - 2));
         }
-        // variables
-        if (variables().contains(s)) {
-            try {
-                return variables().get(s);
-            } catch (InternalNotFoundException ex) {
-                // should never happen
-            }
+        // return
+        if (s.startsWith("return ")) {
+            throw new ValueReturned(toObject(s.substring(7)));
         }
         // delete
         if (s.startsWith("del ") && isName(s.substring(4))) {
@@ -612,7 +609,7 @@ public class GordianScope implements Scope {
                         // is a lone constructor
                         try {
                             Class c = (Class) variables().get(s.substring(4, s.indexOf("(")));
-                            Arguments a = new Arguments(getArgs(s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"))));
+                            Arguments a = new Arguments(getArgs(betweenMatch(s, '(', ')')));
                             return c.contruct(a);
                         } catch (InternalNotFoundException ex) {
                             throw new RuntimeException("Could not find class \"" + s.substring(4, s.indexOf("(")) + "\"");
@@ -711,6 +708,15 @@ public class GordianScope implements Scope {
         }
         if (s.startsWith("+")) {
             return new GordianNumber(((GordianNumber) toObject(s.substring(1))).getValue());
+        }
+        
+        // variables
+        if (variables().contains(s)) {
+            try {
+                return variables().get(s);
+            } catch (InternalNotFoundException ex) {
+                // should never happen
+            }
         }
 
         throw new NullPointerException(s + " was not a value or instruction.");
