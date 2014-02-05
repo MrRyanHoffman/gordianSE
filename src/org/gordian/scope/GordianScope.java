@@ -271,7 +271,11 @@ public class GordianScope implements Scope {
         s = Strings.replaceAll(s, '\n', ';');
         s = Strings.replaceAll(s, '{', "{;");
         s = Strings.replaceAll(s, '}', ";}");
-        
+
+        if (!Strings.contains(s, ";")) {
+            s = s + ';';
+        }
+
         while (Strings.contains(s, "#")) {
             String toRemove = s.substring(s.indexOf('#'), (s.substring(s.indexOf('#'))).indexOf(';') + s.indexOf('#'));
             s = Strings.replace(s, toRemove, "");
@@ -716,7 +720,7 @@ public class GordianScope implements Scope {
         if (s.startsWith("+")) {
             return new GordianNumber(((GordianNumber) toObject(s.substring(1))).getValue());
         }
-        
+
         // variables
         if (variables().contains(s)) {
             try {
